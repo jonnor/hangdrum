@@ -95,7 +95,7 @@ void setup() {
 void loop(){
 
   const long beforeRead = millis();
-  const uint8_t param = 70;
+  const uint8_t param = 20;
   
   //lectura 4 pads
   long temp[10];
