@@ -3,27 +3,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # return a numpy array with the data
-def parse(str):
+def parse(input):
   times = []
   values = []
 
   start = 0.0
   time = start
-  for line in str.split("\n"):
+  for line in input.split("\n"):
     line = line.strip()
     if not line:
       continue
     #print line
     data = line.rstrip(")").lstrip("(")
-    delay, value = data.split(",")
-    time += float(value)/1000
-    value = int(value)
-    times.append(time)
-    values.append(value)
-    #print time, value
+    try:
+      delay, value = data.split(",")
+      time += float(value)/1000
+      value = int(value)
+      times.append(time)
+      values.append(value)
+      #print time, value
+    except ValueError, e:
+      print "ERROR"
+      print "wrong data '%s': %s" % (line, str(e))
+      print "END ERROR"
 
-
-  print time, len(times), len(values)
+  print "parsed", time, len(times), len(values)
   return [ times, values ]
 
 def graph(data):
