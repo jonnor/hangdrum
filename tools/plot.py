@@ -43,7 +43,7 @@ def parse(input):
     data = line.rstrip(")").lstrip("(")
     try:
       delay, value = data.split(",")
-      time += float(value)/1000
+      time += float(delay)/1000
       value = int(value)
       times.append(time)
       values.append(value)
