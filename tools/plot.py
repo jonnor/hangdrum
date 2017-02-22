@@ -2,6 +2,13 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+def runningMeanFast(x, N):
+  return np.convolve(x, np.ones((N,))/N)[(N-1):]
+
+def filter(values):
+  filtered = runningMeanFast(values[1], 7)
+  return [ values[0], filtered ]
+
 # return a numpy array with the data
 def parse(input):
   times = []
@@ -31,9 +38,11 @@ def parse(input):
   return [ times, values ]
 
 def graph(data):
-  X,Y = data 
+  X,raw = data 
 
-  plt.plot(X,Y)
+  plt.plot(X,raw)
+  filtered = filter(data)
+  plt.plot(X,filtered[1])
   plt.show()
 
 def main():
