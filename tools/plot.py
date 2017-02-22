@@ -2,6 +2,25 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+# https://tomroelandts.com/articles/how-to-create-a-simple-high-pass-filter
+# fc: Cutoff frequency as a fraction of the sampling rate (in (0, 0.5)).
+# b: Transition band, as a fraction of the sampling rate (in (0, 0.5)).
+def createHighPass(fc, b):
+  N = int(np.ceil((4 / b)))
+  if not N % 2: N += 1  # Make sure that N is odd.
+  n = np.arange(N)
+ 
+  # Compute a low-pass filter.
+  h = np.sinc(2 * fc * (n - (N - 1) / 2.))
+  w = np.blackman(N)
+  h = h * w
+  h = h / np.sum(h)
+ 
+  # Create a high-pass filter from the low-pass filter through spectral inversion.
+  h = -h
+  h[(N - 1) / 2] += 1
+  return h
+
 def runningMeanFast(x, N):
   return np.convolve(x, np.ones((N,))/N)[(N-1):]
 
@@ -39,10 +58,16 @@ def parse(input):
 
 def graph(data):
   X,raw = data 
+  highpass = createHighPass(0.02, 0.05)
 
   plt.plot(X,raw)
-  filtered = filter(data)
-  plt.plot(X,filtered[1])
+  averaged = filter(data)
+  print "averaged", averaged[1].shape, len(X)
+  plt.plot(X,averaged[1])
+  edge = np.convolve(averaged[1], highpass, mode="same")
+  edge = np.multiply(edge, 10)
+  print "edge", edge.shape, len(X)
+  plt.plot(X,edge)
   plt.show()
 
 def main():
