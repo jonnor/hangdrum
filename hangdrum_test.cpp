@@ -3,6 +3,8 @@
 
 #include <cstdio>
 #include <vector>
+#include <fstream>
+#include <string>
 
 #include <alsa/asoundlib.h>
 
@@ -71,24 +73,80 @@ public:
 
 } // end namespace alsa
 
+class Parser {
 
-// read in the recorded input data
-// play through it
-// record what happened
+struct DelayValue {
+    int delay = -1;
+    int value = -1;
 
-std::vector<hangdrum::Input> read_events(std::string filename) {
+    const bool valid() {
+        return value > 0 and value < 2048 and delay > 0 and delay < 50;
+    }
+};
+
+public:
+  DelayValue push(uint8_t data) {
+    if (index >= BUFFER_MAX) {
+      // prevent overflowing buffer
+      index = 0;
+    }
+    buffer[index++] = data;
+
+    DelayValue ret;
+    if (data == '\n') {
+      sscanf(buffer, "(%d,%d)\n", &ret.delay, &ret.value);
+      index = 0;
+      memset(buffer, 0, BUFFER_MAX);
+    }
+    return ret;
+  }
+private:
+  static const size_t BUFFER_MAX = 100;
+  char buffer[BUFFER_MAX] = {};
+  unsigned int index = 0;
+};
+
+
+std::vector<hangdrum::Input>
+fake_events(std::vector<int> vals, int timeStepMs) {
     std::vector<hangdrum::Input> events;
-
-    auto vals = { 0, 3, 2, 101, 103, 90, 120, 90, 120, 0, 0 };
     long currentTime = 0;
     for (int v : vals) {
-        currentTime += 1000;
+        currentTime += timeStepMs;
         hangdrum::Input input {
             { v },
             currentTime,
         };
         events.push_back(input);
     }
+    return events;
+}
+
+std::vector<hangdrum::Input> read_events(std::string filename) {
+    std::vector<hangdrum::Input> events;
+    long currentTime = 0;
+    Parser parser;
+
+    using charIterator = std::istreambuf_iterator<char>;
+    std::ifstream filestream(filename);
+    std::string content((charIterator(filestream)),(charIterator()));
+
+    printf("read %s: %d\n", filename.c_str(), (int)content.size());
+ 
+    for ( char &ch : content ) {
+        auto val = parser.push(ch);
+        if (not val.valid()) {
+            continue;
+        }
+        currentTime += val.delay;
+        hangdrum::Input input {
+            { val.value },
+            currentTime,
+        };
+        events.push_back(input);
+    }
+
+    printf("events: %d\n", (int)events.size());
     return events;
 }
 
@@ -110,7 +168,6 @@ int main(int argc, char *argv[]) {
     
     long currentTime = 0;
     for (auto &event : inputEvents) {
-        //printf("in: %d\n", event.values[0]);
         if (realTime) {
             usleep(1000*(event.time-currentTime));
         }
