@@ -36,14 +36,22 @@ struct PadConfig {
     const int threshold = 100; 
 };
 
-static const int N_PADS = 3;
+static const int N_PADS = 10;
 struct Config {
-    const int8_t octave = 3;
+    const int8_t octave = 4;
     const int8_t channel = 0;
+    const int8_t sendPin = 1; // analog
     const std::array<PadConfig, N_PADS> pads {{
-        { 1, midiNote(Note::A, octave) },
-        { 2, midiNote(Note::B, octave) },
-        { 3, midiNote(Note::C, octave) },
+        { 2, midiNote(Note::C, octave) },
+        { 3, midiNote(Note::D, octave) },
+        { 4, midiNote(Note::E, octave) },
+        { 5, midiNote(Note::F, octave) },
+        { 6, midiNote(Note::G, octave) },
+        { 7, midiNote(Note::A, octave) },
+        { 8, midiNote(Note::B, octave) },
+        { 9, midiNote(Note::C, octave+1) },
+        { 10, midiNote(Note::C, octave+2) },
+        { 11, midiNote(Note::D, octave+2) }, // pad ext
     }};
 };
 
@@ -147,21 +155,5 @@ calculateState(const State &previous, const Input &input, const Config &config) 
     calculateMidiMessages(next, config, next.messages);
     return next;
 }
-
-#ifdef ARDUINO
-void
-sendMessagesArduino(std::array<MidiEventMessage, N_PADS> &messages) {
-    for ( const auto & m : messages ) {
-        if (m.type == MidiEventMessage::Nothing) {
-            continue;
-        }
-        const midiEventPacket_t packet = {
-            m.type, 0x80 | m.channel, m.pitch, m.velocity
-        };
-        MidiUSB.sendMIDI(packet);
-    }
-    MidiUSB.flush();
-}
-#endif
 
 } // end namespace hangdrum
