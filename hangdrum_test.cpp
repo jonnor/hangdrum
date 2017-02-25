@@ -57,24 +57,19 @@ public:
             snd_seq_ev_set_noteoff(&ev,
                 event.channel, event.pitch, event.velocity);
         } else {
-            throw std::invalid_argument
-("alsa.Output: Unknown event type");
+            throw std::invalid_argument("alsa.Output: Unknown event type");
         }
 
         const int queued_events = snd_seq_event_output(this->handle, &ev);
         const int remaining_bytes = snd_seq_drain_output(this->handle);
-
-        if (queued_events < 0) {
-            fprintf(stderr, "%s\n", snd_strerror(queued_events));
+        if (queued_events < 0 or remaining_bytes < 0) {
+            throw std::runtime_error(std::string("Could not send event: ")
+                                        + snd_strerror(queued_events));
         }
-
-        printf("alsa.Output sent event. %d, %d\n", queued_events, remaining_bytes);
     }
 };
 
 } // end namespace alsa
-
-
 
 
 // read in the recorded input data
@@ -85,9 +80,12 @@ std::vector<hangdrum::Input> read_events(std::string filename) {
     std::vector<hangdrum::Input> events;
 
     auto vals = { 0, 3, 2, 101, 103, 90, 120, 90, 120, 0, 0 };
+    long currentTime = 0;
     for (int v : vals) {
+        currentTime += 1000;
         hangdrum::Input input {
             { v },
+            currentTime,
         };
         events.push_back(input);
     }
@@ -105,12 +103,19 @@ int main(int argc, char *argv[]) {
     }
 
     out.open(14, 0);
+    const bool realTime = true;
 
     const std::string filename = argv[1];
     std::vector<hangdrum::Input> inputEvents = read_events(filename);
     
+    long currentTime = 0;
     for (auto &event : inputEvents) {
         //printf("in: %d\n", event.values[0]);
+        if (realTime) {
+            usleep(1000*(event.time-currentTime));
+        }
+        currentTime = event.time;
+
         state = hangdrum::calculateState(state, event, config);
         //printf("state: %d\n", state.pads[0].state);
         //printf("value: %d\n", state.pads[0].value);
@@ -136,6 +141,4 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
-    sleep(5);
 }

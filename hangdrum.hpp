@@ -90,6 +90,7 @@ struct PadInput {
 
 struct Input {
     std::array<PadInput, N_PADS> values;
+    long time; // milliseconds
 };
 
 PadState
