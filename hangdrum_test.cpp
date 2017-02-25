@@ -12,6 +12,6 @@ int main() {
     }
 
     for ( auto &s : state.pads ) {
-        printf("state: %d\n", s.value);
+        printf("state: %d %d\n", s.value, s.state);
     }
 }

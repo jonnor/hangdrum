@@ -1,6 +1,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <array>
 
 namespace hangdrum {
 
@@ -14,44 +15,6 @@ int8_t midiNote(Note note, int8_t octave) {
     return (octave*12)+(int8_t)note;
 }
 
-struct PadConfig {
-    const uint8_t pin;
-    const int8_t note;
-    const int8_t velocity = 64;
-    const int threshold = 100; 
-};
-
-struct Config {
-    const int8_t octave = 3;
-    const int8_t channel = 0;
-    const std::vector<PadConfig> pads {
-        { 1, midiNote(Note::A, octave) },
-        { 2, midiNote(Note::B, octave) },
-        { 3, midiNote(Note::C, octave) },
-    };
-};
-
-enum class PadStateE : int8_t {
-    StayOff,
-    TurnOn,
-    StayOn,
-    TurnOff,
-};
-
-struct PadState {
-    int value = 0;
-    PadStateE state = PadStateE::StayOff;
-};
-
-struct State {
-    // XXX: should be able to declare size here and default-initialize?
-    std::vector<PadState> pads = {
-        PadState {},
-        PadState {},
-        PadState {},
-    } ;
-};
-
 enum class MidiMessageType : int8_t {
     Nothing = -1, // XXX: using optional/maybe type would be nicer 
     NoteOn = 0x09,
@@ -63,6 +26,44 @@ struct MidiEventMessage {
     int8_t channel;
     int8_t pitch;
     int8_t velocity;
+};
+
+
+// App things
+struct PadConfig {
+    const uint8_t pin;
+    const int8_t note;
+    const int8_t velocity = 64;
+    const int threshold = 100; 
+};
+
+static const int N_PADS = 3;
+struct Config {
+    const int8_t octave = 3;
+    const int8_t channel = 0;
+    const std::vector<PadConfig> pads {
+        { 1, midiNote(Note::A, octave) },
+        { 2, midiNote(Note::B, octave) },
+        { 3, midiNote(Note::C, octave) }
+    };
+};
+
+enum class PadStateE : int8_t {
+    StayOff = 11,
+    TurnOn,
+    StayOn,
+    TurnOff,
+};
+
+struct PadState {
+    int value = 0;
+    PadStateE state = PadStateE::StayOff;
+};
+
+struct State {
+    // XXX: number of pads much match config
+    std::array<PadState, N_PADS> pads;
+    std::array<MidiEventMessage, N_PADS> messages;
 };
 
 MidiMessageType
@@ -83,23 +84,67 @@ eventFromState(const PadState &pad) {
     }
 };
 
+struct Input {
+    // XXX: size much match Config.pads.size()
+    std::array<int, N_PADS> values;
+};
+
+PadState
+calculateStatePad(const PadState &previous, const int input, const PadConfig &config) {
+    using S = PadStateE;
+    PadState next = previous;
+
+    // Apply input
+    next.value = input; // no filtering
+
+    // Move from transient states to stables ones
+    next.state = (previous.state == S::TurnOn) ? S::StayOn : previous.state;
+    next.state = (previous.state == S::TurnOff) ? S::StayOff : previous.state;   
+
+    // Change to new state
+    if (next.state == S::StayOn) {
+        if (next.value < config.threshold) {
+            next.state = S::TurnOff;
+        }
+    } else if (next.state == S::StayOff) {
+        if (next.value > config.threshold) {
+            next.state = S::TurnOn;
+        }
+    } else {
+        // XXX: Should never happen
+    }
+}
+
 void
-calculatePackets(const State &state, const Config &config, std::vector<MidiEventMessage> &buffer) {
+calculateMidiMessages(const State &state, const Config &config,
+    std::array<MidiEventMessage, N_PADS> &buffer) {
 
     // FIXME: check pre-condition buffer.size() == state.size() == config.size();
 
-    int number_messages = 0;
     for (int i=0; i<state.pads.size(); i++) {
         const auto & pad = state.pads[i];
         const auto & cfg = config.pads[i];
-        const auto type = eventFromState(pad);
-        buffer[i] = { type, config.channel, cfg.note, cfg.velocity };
+        buffer[i] = \
+            { eventFromState(pad), config.channel, cfg.note, cfg.velocity };
     }
 };
 
+State
+calculateState(const State &previous, const Input &input, const Config &config) {
+    State next = previous;
+
+    // FIXME: check pre-condition, all array sizes are the same
+
+    for (int i=0; i<next.pads.size(); i++) {
+        next.pads[i] = calculateStatePad(previous.pads[i], input.values[i], config.pads[i]);
+    }
+
+    calculateMidiMessages(next, config, next.messages);
+}
+
 #ifdef ARDUINO
 void
-sendMessagesArduino(std::vector<MidiEventMessage> &messages) {
+sendMessagesArduino(std::array<MidiEventMessage, N_PADS> &messages) {
     for ( const auto & m : messages ) {
         if (m.type == MidiEventMessage::Nothing) {
             continue;
