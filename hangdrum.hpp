@@ -1,6 +1,5 @@
 
 #include <cstdint>
-#include <vector>
 #include <array>
 
 namespace hangdrum {
@@ -41,11 +40,11 @@ static const int N_PADS = 3;
 struct Config {
     const int8_t octave = 3;
     const int8_t channel = 0;
-    const std::vector<PadConfig> pads {
+    const std::array<PadConfig, N_PADS> pads {{
         { 1, midiNote(Note::A, octave) },
         { 2, midiNote(Note::B, octave) },
-        { 3, midiNote(Note::C, octave) }
-    };
+        { 3, midiNote(Note::C, octave) },
+    }};
 };
 
 enum class PadStateE : int8_t {
@@ -61,7 +60,6 @@ struct PadState {
 };
 
 struct State {
-    // XXX: number of pads much match config
     std::array<PadState, N_PADS> pads;
     std::array<MidiEventMessage, N_PADS> messages;
 };
@@ -81,25 +79,30 @@ eventFromState(const PadState &pad) {
     case S::StayOff:
         return E::Nothing;
     // no default, should be exhaustive
+    default:
+        return E::Nothing;
     }
 };
 
+struct PadInput {
+    int capacitance = 0;
+};
+
 struct Input {
-    // XXX: size much match Config.pads.size()
-    std::array<int, N_PADS> values;
+    std::array<PadInput, N_PADS> values;
 };
 
 PadState
-calculateStatePad(const PadState &previous, const int input, const PadConfig &config) {
+calculateStatePad(const PadState &previous, const PadInput input, const PadConfig &config) {
     using S = PadStateE;
     PadState next = previous;
 
     // Apply input
-    next.value = input; // no filtering
+    next.value = input.capacitance; // no filtering
 
     // Move from transient states to stables ones
-    next.state = (previous.state == S::TurnOn) ? S::StayOn : previous.state;
-    next.state = (previous.state == S::TurnOff) ? S::StayOff : previous.state;   
+    next.state = (next.state == S::TurnOn) ? S::StayOn : next.state;
+    next.state = (next.state == S::TurnOff) ? S::StayOff : next.state;   
 
     // Change to new state
     if (next.state == S::StayOn) {
@@ -113,15 +116,16 @@ calculateStatePad(const PadState &previous, const int input, const PadConfig &co
     } else {
         // XXX: Should never happen
     }
+    return next;
 }
 
 void
 calculateMidiMessages(const State &state, const Config &config,
     std::array<MidiEventMessage, N_PADS> &buffer) {
 
-    // FIXME: check pre-condition buffer.size() == state.size() == config.size();
+    // TODO: check pre-condition buffer.size() == state.size() == config.size();
 
-    for (int i=0; i<state.pads.size(); i++) {
+    for (unsigned int i=0; i<state.pads.size(); i++) {
         const auto & pad = state.pads[i];
         const auto & cfg = config.pads[i];
         buffer[i] = \
@@ -133,13 +137,14 @@ State
 calculateState(const State &previous, const Input &input, const Config &config) {
     State next = previous;
 
-    // FIXME: check pre-condition, all array sizes are the same
+    // TODO: check pre-condition, all array sizes are the same
 
-    for (int i=0; i<next.pads.size(); i++) {
+    for (unsigned int i=0; i<next.pads.size(); i++) {
         next.pads[i] = calculateStatePad(previous.pads[i], input.values[i], config.pads[i]);
     }
 
     calculateMidiMessages(next, config, next.messages);
+    return next;
 }
 
 #ifdef ARDUINO
@@ -150,8 +155,7 @@ sendMessagesArduino(std::array<MidiEventMessage, N_PADS> &messages) {
             continue;
         }
         const midiEventPacket_t packet = {
-            MidiMessageType::NoteOn,
-            0x80 | m.channel, m.pitch, m.velocity
+            m.type, 0x80 | m.channel, m.pitch, m.velocity
         };
         MidiUSB.sendMIDI(packet);
     }
