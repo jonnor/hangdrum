@@ -144,7 +144,8 @@ std::string isotime(time_t basetime, long millis) {
 }
 
 json11::Json
-create_flowtrace(const std::vector<hangdrum::State> &history) {
+create_flowtrace(const std::vector<hangdrum::State> &history,
+                const hangdrum::Config &config) {
 
     std::vector<flowtrace::Event> events;
 
@@ -154,6 +155,12 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
     const std::string graphData = read_file("./graphs/pad.json");
     std::string parseError;
     const json11::Json graph = json11::Json::parse(graphData, parseError);
+
+    // IIPs
+    flowtrace::Event th(config.threshold);
+    th.time = isotime(basetime, 0);
+    th.tgt = { "trigger", "threshold" };
+    events.push_back(th);
 
     for (auto &state : history) {
         using Ev = flowtrace::Event;
@@ -271,7 +278,7 @@ int main(int argc, char *argv[]) {
         }
     }
     std::cout << "creating flowtrace" << std::endl;
-    auto trace = create_flowtrace(states);
+    auto trace = create_flowtrace(states, config);
     const std::string trace_filename = "trace.json"; 
     write_flowtrace(trace_filename, trace);
     std::cout << "wrote trace to: " << trace_filename << std::endl;

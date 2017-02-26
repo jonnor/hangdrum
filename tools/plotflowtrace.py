@@ -10,6 +10,13 @@ def graph(dataseries):
   for name, series in dataseries.items():
     times = map(lambda d: d['seconds'], series)
 
+    print 'plotting', name
+    if name.endswith('threshold trigger'):
+      # HACK: hardcoded.
+      for v in series:
+        plt.axhline(y=v['data'], color='red')
+      continue
+
     first = series[0]['data'] # we expect homogenous data...
     if isinstance(first, numbers.Number):
       values = map(lambda d: int(d['data']), series)
@@ -18,18 +25,22 @@ def graph(dataseries):
       # HACK: hardcoded to reconize notes
       # booleans should default to this visualization?
       # should be a way to use a predicate function to get this for any value
-      values = map(lambda d: d['data']['type'] == "noteon", series)
+      # XXX: also does not work with multiple different overlapping messages a the same time
+      # need a way to establish their "identity"? A "group by" construct might be fine, ref Eve lang
+      values = map(lambda d: d['data']['type'], series)
       span_start = None
-      for time, value in zip(times, values):
+      for time, data in zip(times, values):
+        value = data == "noteon"
         if value:
+          plt.axvline(x=time, color='black')
           if span_start:
             pass
-            # just continue. TODO: always mark transitions with vertical line?
           else:
-            span_start = time
+            span_start = { 'time': time, 'data': data }
         else:
+          plt.axvline(x=time, color='black')
           if span_start:
-            plt.axvspan(span_start, time, alpha=0.5)
+            plt.axvspan(span_start['time'], time, alpha=0.5)
             span_start = None
           else:
             pass
