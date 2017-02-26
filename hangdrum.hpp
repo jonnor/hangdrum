@@ -88,6 +88,7 @@ struct Config {
     const int threshold = 100;
     const int8_t velocity = 64;
     const float lowpass = 0.2;
+    const float highpass = 0.5;
     const PadConfig pads[N_PADS] = {
         { 2, midiNote(Note::D, octave), velocity, threshold },
         { 3, midiNote(Note::D, octave), velocity, threshold },
@@ -112,6 +113,8 @@ enum class PadStateE : int8_t {
 struct PadState {
     int raw = 0;
     int lowpassed = 0;
+    int highfilter = 0;
+    int highpassed = 0;
     int value = 0;    
     PadStateE state = PadStateE::StayOff;
 };
@@ -157,8 +160,10 @@ calculateStatePad(const PadState &previous, const PadInput input, const PadConfi
 
     // Apply input
     next.raw = input.capacitance;
-    next.lowpassed = exponentialMovingAverage(next.raw, previous.lowpassed, appConfig.lowpass);
-    next.value = next.lowpassed;
+    next.lowpassed = exponentialMovingAverage(input.capacitance, previous.lowpassed, appConfig.lowpass);
+    next.highfilter = exponentialMovingAverage(input.capacitance, previous.highfilter, appConfig.highpass);
+    next.highpassed = input.capacitance - next.highfilter;
+    next.value = next.lowpassed; // FIXME: does not trigged with highpassed
 
     // Move from transient states to stables ones
     next.state = (next.state == S::TurnOn) ? S::StayOn : next.state;
