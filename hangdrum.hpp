@@ -31,6 +31,11 @@ struct MidiEventMessage {
     int8_t velocity;
 };
 
+static int
+exponentialMovingAverage(const int value, const int previous, const float smoothening) {
+    return (smoothening*value) + ((1-smoothening)*previous);
+}  
+
 // Simulation things
 class Parser {
 
@@ -71,7 +76,7 @@ struct PadConfig {
     const uint8_t pin;
     const int8_t note;
     const int8_t velocity;
-    const int threshold; 
+    const int threshold;
 };
 
 static const int N_PADS = 10;
@@ -82,6 +87,7 @@ struct Config {
     const int8_t sendPin = 1; // analog
     const int threshold = 100;
     const int8_t velocity = 64;
+    const float lowpass = 0.2;
     const PadConfig pads[N_PADS] = {
         { 2, midiNote(Note::D, octave), velocity, threshold },
         { 3, midiNote(Note::D, octave), velocity, threshold },
@@ -143,12 +149,12 @@ struct Input {
 };
 
 PadState
-calculateStatePad(const PadState &previous, const PadInput input, const PadConfig &config) {
+calculateStatePad(const PadState &previous, const PadInput input, const PadConfig &config, const Config &appConfig) {
     using S = PadStateE;
     PadState next = previous;
 
     // Apply input
-    next.value = input.capacitance; // no filtering
+    next.value = exponentialMovingAverage(input.capacitance, previous.value, appConfig.lowpass);
 
     // Move from transient states to stables ones
     next.state = (next.state == S::TurnOn) ? S::StayOn : next.state;
@@ -190,7 +196,7 @@ calculateState(const State &previous, const Input &input, const Config &config) 
     // TODO: check pre-condition, all array sizes are the same
 
     for (unsigned int i=0; i<N_PADS; i++) {
-        next.pads[i] = calculateStatePad(previous.pads[i], input.values[i], config.pads[i]);
+        next.pads[i] = calculateStatePad(previous.pads[i], input.values[i], config.pads[i], config);
     }
 
     calculateMidiMessages(next, config, next.messages);
