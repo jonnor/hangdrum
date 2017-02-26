@@ -1,0 +1,15 @@
+
+read(ReadCapacitance) -> lowpass(ewa/LowPass) -> highpass(ewa/HighPass)
+
+highpass -> trigger(Threshold)
+trigger NEXT -> STATE trigger
+
+trigger -> note(StateToMidi) -> send(midi/SendUSB)
+
+'C3' -> NOTE note
+'64' -> VELOCITY note
+'0' -> CHANNEL note
+'0.2' -> A lowpass
+'0.5' -> A highpass
+'2' -> PIN read
+'1' -> SENDPIN read
