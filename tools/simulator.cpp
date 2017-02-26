@@ -73,39 +73,6 @@ public:
 
 } // end namespace alsa
 
-class Parser {
-
-struct DelayValue {
-    int delay = -1;
-    int value = -1;
-
-    const bool valid() {
-        return value > 0 and value < 2048 and delay > 0 and delay < 50;
-    }
-};
-
-public:
-  DelayValue push(uint8_t data) {
-    if (index >= BUFFER_MAX) {
-      // prevent overflowing buffer
-      index = 0;
-    }
-    buffer[index++] = data;
-
-    DelayValue ret;
-    if (data == '\n') {
-      sscanf(buffer, "(%d,%d)\n", &ret.delay, &ret.value);
-      index = 0;
-      memset(buffer, 0, BUFFER_MAX);
-    }
-    return ret;
-  }
-private:
-  static const size_t BUFFER_MAX = 100;
-  char buffer[BUFFER_MAX] = {};
-  unsigned int index = 0;
-};
-
 
 std::vector<hangdrum::Input>
 fake_events(std::vector<int> vals, int timeStepMs) {
@@ -125,7 +92,7 @@ fake_events(std::vector<int> vals, int timeStepMs) {
 std::vector<hangdrum::Input> read_events(std::string filename) {
     std::vector<hangdrum::Input> events;
     long currentTime = 0;
-    Parser parser;
+    hangdrum::Parser parser;
 
     using charIterator = std::istreambuf_iterator<char>;
     std::ifstream filestream(filename);

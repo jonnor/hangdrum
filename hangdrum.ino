@@ -7,13 +7,24 @@ using namespace hangdrum;
 
 Config config;
 struct Sensors {
-  CapacitiveSensor capacitive[1] = {
+  CapacitiveSensor capacitive[N_PADS] = {
     CapacitiveSensor(config.sendPin, config.pads[0].pin),
+    CapacitiveSensor(config.sendPin, config.pads[1].pin),
+    CapacitiveSensor(config.sendPin, config.pads[2].pin),
+    CapacitiveSensor(config.sendPin, config.pads[3].pin),
+    CapacitiveSensor(config.sendPin, config.pads[4].pin),
+    CapacitiveSensor(config.sendPin, config.pads[5].pin),
+    CapacitiveSensor(config.sendPin, config.pads[6].pin),
+    CapacitiveSensor(config.sendPin, config.pads[7].pin),
+    CapacitiveSensor(config.sendPin, config.pads[8].pin),
+    CapacitiveSensor(config.sendPin, config.pads[9].pin),
   };
 };
 Sensors sensors;
 State state;
+Parser parser;
 
+#ifndef EMULATE_INPUTS
 void sendMessagesMidiUSB(MidiEventMessage *messages) {
     for (int i=0; i<N_PADS; i++) {
         const auto &m = messages[i];
@@ -30,6 +41,7 @@ void sendMessagesMidiUSB(MidiEventMessage *messages) {
     }
     MidiUSB.flush();
 }
+#endif
 
 Input readInputs() {
   Input current;
@@ -54,21 +66,42 @@ void setup() {
 
 void loop(){
   const long beforeRead = millis();
-  Input input = readInputs();
+  //Input input = readInputs();
   const long afterRead = millis();
 
-  state = hangdrum::calculateState(state, input, config);
-  const long afterCalculation = millis();
-  sendMessagesMidiUSB(state.messages);
-  const long afterSend = millis();
-/*
-  const long readingTime = afterRead-beforeRead;
-  Serial.print("(");
-  Serial.print(readingTime);
-  Serial.print(",");
-  Serial.print(temp[0]);
-  Serial.println(")");
-*/
+  //state = hangdrum::calculateState(state, input, config);
+  //const long afterCalculation = millis();
 
+  while (Serial.available()) {
+    Parser::DelayValue val = parser.push(Serial.read());
+    if (val.valid()) {
+      const long beforeCalculation = millis();
+      Input input = {
+          { val.value },
+          beforeCalculation
+      };
+      state = hangdrum::calculateState(state, input, config);
+      const long afterCalculation = millis();
+
+      Serial.print("calculating: ");
+      Serial.println(afterCalculation-beforeCalculation);
+      Serial.flush();
+    } else {
+      Serial.println("w");
+    }
+
+  }
+
+#ifndef EMULATE_INPUTS
+  sendMessagesMidiUSB(state.messages);
+#endif
+  const long afterSend = millis();
+
+  const long readingTime = afterRead-beforeRead;
+  //Serial.print("(");
+  //Serial.print(readingTime);
+  //Serial.print(",");
+  //Serial.print(input.values[0].capacitance);
+  //Serial.println(")");
 }
 

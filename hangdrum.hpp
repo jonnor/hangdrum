@@ -1,5 +1,10 @@
 
 #include <stdint.h>
+#include <stddef.h>
+
+// for Parser. sscanf/memset
+#include <stdio.h>
+#include <string.h>
 
 namespace hangdrum {
 
@@ -26,6 +31,40 @@ struct MidiEventMessage {
     int8_t velocity;
 };
 
+// Simulation things
+class Parser {
+
+public:
+struct DelayValue {
+    int delay = -1;
+    int value = -1;
+
+    const bool valid() {
+        return value > 0 and value < 2048 and delay > 0 and delay < 50;
+    }
+};
+
+public:
+  DelayValue push(uint8_t data) {
+    if (index >= BUFFER_MAX) {
+      // prevent overflowing buffer
+      index = 0;
+    }
+    buffer[index++] = data;
+
+    DelayValue ret;
+    if (data == '\n') {
+      sscanf(buffer, "(%d,%d)\n", &ret.delay, &ret.value);
+      index = 0;
+      memset(buffer, 0, BUFFER_MAX);
+    }
+    return ret;
+  }
+private:
+  static const size_t BUFFER_MAX = 100;
+  char buffer[BUFFER_MAX] = {};
+  unsigned int index = 0;
+};
 
 // App things
 struct PadConfig {
@@ -95,7 +134,7 @@ eventFromState(const PadState &pad) {
 };
 
 struct PadInput {
-    int capacitance = 0;
+    int capacitance;
 };
 
 struct Input {
