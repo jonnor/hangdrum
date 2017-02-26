@@ -1,0 +1,26 @@
+{
+  "name": "hangdrum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonnor/midihang.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonnor/midihang/issues"
+  },
+  "homepage": "https://github.com/jonnor/midihang#readme",
+  "devDependencies": {
+    "fbp": "^1.5.0",
+    "flowtrace": "0.0.12"
+  }
+}
