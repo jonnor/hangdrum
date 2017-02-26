@@ -95,14 +95,19 @@ fake_events(std::vector<int> vals, int timeStepMs) {
     return events;
 }
 
+std::string read_file(std::string filename) {
+    using charIterator = std::istreambuf_iterator<char>;
+    std::ifstream filestream(filename);
+    std::string content((charIterator(filestream)),(charIterator()));
+    return content;
+}
+
 std::vector<hangdrum::Input> read_events(std::string filename) {
     std::vector<hangdrum::Input> events;
     long currentTime = 0;
     hangdrum::Parser parser;
 
-    using charIterator = std::istreambuf_iterator<char>;
-    std::ifstream filestream(filename);
-    std::string content((charIterator(filestream)),(charIterator()));
+    std::string content = read_file(filename);
 
     printf("read %s: %d\n", filename.c_str(), (int)content.size());
  
@@ -143,9 +148,12 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
 
     std::vector<flowtrace::Event> events;
 
-
     time_t basetime;
     time(&basetime);
+
+    const std::string graphData = read_file("./graphs/pad.json");
+    std::string parseError;
+    const json11::Json graph = json11::Json::parse(graphData, parseError);
 
     for (auto &state : history) {
         using Ev = flowtrace::Event;
@@ -156,10 +164,18 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
 
         Ev in(p.raw);
         in.time = time;
+        in.src = { "read", "out" };
+        in.tgt = { "lowpass", "in" };
+
         Ev lowpassed(p.lowpassed);
         lowpassed.time = time;
+        lowpassed.src = { "lowpass", "out" };
+        lowpassed.tgt = { "highpass", "in" };
+
         Ev highpassed(p.highpassed);
         highpassed.time = time;
+        highpassed.src = { "highpass", "out" };
+        highpassed.tgt = { "trigger", "in" };
         //Ev padstate(p.state);
         // padstate.time = time;
 
@@ -179,9 +195,7 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
     }
 
     // TODO: put a graph representation into the header
-    using namespace json11;   
-    auto graph = Json::object {};
-
+    using namespace json11;
     return Json::object {
         { "header", Json::object {
             { "graphs", Json::object {
