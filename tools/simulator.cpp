@@ -1,9 +1,9 @@
 
-#include "../hangdrum.hpp"
-#include "../flowtrace.hpp"
-
 #include <json11.hpp>
 #include <json11.cpp>
+
+#include "../hangdrum.hpp"
+#include "../flowtrace.hpp"
 
 #include <cstdio>
 #include <vector>
@@ -176,6 +176,7 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
         highpassed.time = time;
         highpassed.src = { "highpass", "out" };
         highpassed.tgt = { "trigger", "in" };
+
         //Ev padstate(p.state);
         // padstate.time = time;
 
@@ -185,10 +186,12 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
 
         for (int i=0; i<hangdrum::N_PADS; i++) {
             auto &m = state.messages[i];
-            //Ev note(m);
-            // note.time = time;
+            Ev note(m);
+            note.time = time;
+            note.src = { "note", "out" };
+            note.tgt = { "send", "in" };
             if (m.type != hangdrum::MidiMessageType::Nothing) {
-                //events.push_back(m);
+                events.push_back(note);
             }
         }
 

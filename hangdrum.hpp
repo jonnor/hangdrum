@@ -24,11 +24,36 @@ enum class MidiMessageType : int8_t {
     NoteOff = 0x08,
 };
 
+#ifdef HAVE_JSON11
+const char * to_string(MidiMessageType t) {
+    using T = MidiMessageType;
+
+    switch (t) {
+    case T::NoteOn: return "noteon";
+    case T::NoteOff: return "noteoff";
+    case T::Nothing: return "nothing";
+    default: return "unknown";
+    };  
+}
+#endif
+
 struct MidiEventMessage {
     MidiMessageType type;
     int8_t channel;
     int8_t pitch;
     int8_t velocity;
+
+#ifdef HAVE_JSON11
+    json11::Json to_json() const {
+        using namespace json11;
+        return Json::object {
+            {"type", to_string(type)},
+            {"channel", channel},
+            {"pitch", pitch},
+            {"velocity", velocity},
+        };
+    }
+#endif
 };
 
 static int

@@ -3,13 +3,40 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 import dateutil
+import numbers
 
 def graph(dataseries):
 
   for name, series in dataseries.items():
     times = map(lambda d: d['seconds'], series)
-    values = map(lambda d: d['data'], series)
-    plt.plot(times, values, label=name)
+
+    first = series[0]['data'] # we expect homogenous data...
+    if isinstance(first, numbers.Number):
+      values = map(lambda d: int(d['data']), series)
+      plt.plot(times, values, label=name)
+    elif first.get('type') and first.get('type').startswith("note"):
+      # HACK: hardcoded to reconize notes
+      # booleans should default to this visualization?
+      # should be a way to use a predicate function to get this for any value
+      values = map(lambda d: d['data']['type'] == "noteon", series)
+      span_start = None
+      for time, value in zip(times, values):
+        if value:
+          if span_start:
+            pass
+            # just continue. TODO: always mark transitions with vertical line?
+          else:
+            span_start = time
+        else:
+          if span_start:
+            plt.axvspan(span_start, time, alpha=0.5)
+            span_start = None
+          else:
+            pass
+            # TODO: handle case where we (seemingly) start on, then transition off?  
+
+    else:
+      print "Unknown data type", values[0]
 
   plt.show()
 
@@ -36,7 +63,7 @@ def analyze_data(trace):
     d = {
       'time': time,
       'seconds': (time - start_time).total_seconds(),
-      'data': int(payload['data']),
+      'data': payload['data'],
     }
     #print edge, d['seconds']
     edge_data[edge].append(d)
