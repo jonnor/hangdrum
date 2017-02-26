@@ -1,6 +1,5 @@
 
-#include <cstdint>
-#include <array>
+#include <stdint.h>
 
 namespace hangdrum {
 
@@ -32,27 +31,30 @@ struct MidiEventMessage {
 struct PadConfig {
     const uint8_t pin;
     const int8_t note;
-    const int8_t velocity = 64;
-    const int threshold = 100; 
+    const int8_t velocity;
+    const int threshold; 
 };
 
 static const int N_PADS = 10;
 struct Config {
     const int8_t octave = 4;
     const int8_t channel = 0;
+    
     const int8_t sendPin = 1; // analog
-    const std::array<PadConfig, N_PADS> pads {{
-        { 2, midiNote(Note::C, octave) },
-        { 3, midiNote(Note::D, octave) },
-        { 4, midiNote(Note::E, octave) },
-        { 5, midiNote(Note::F, octave) },
-        { 6, midiNote(Note::G, octave) },
-        { 7, midiNote(Note::A, octave) },
-        { 8, midiNote(Note::B, octave) },
-        { 9, midiNote(Note::C, octave+1) },
-        { 10, midiNote(Note::C, octave+2) },
-        { 11, midiNote(Note::D, octave+2) }, // pad ext
-    }};
+    const int threshold = 100;
+    const int8_t velocity = 64;
+    const PadConfig pads[N_PADS] = {
+        { 2, midiNote(Note::D, octave), velocity, threshold },
+        { 3, midiNote(Note::D, octave), velocity, threshold },
+        { 4, midiNote(Note::E, octave), velocity, threshold },
+        { 5, midiNote(Note::F, octave), velocity, threshold },
+        { 6, midiNote(Note::G, octave), velocity, threshold },
+        { 7, midiNote(Note::A, octave), velocity, threshold },
+        { 8, midiNote(Note::B, octave), velocity, threshold },
+        { 9, midiNote(Note::C, octave+1), velocity, threshold },
+        { 10, midiNote(Note::C, octave+2), velocity, threshold },
+        { 11, midiNote(Note::D, octave+2), velocity, threshold }, // pad ext
+    };
 };
 
 enum class PadStateE : int8_t {
@@ -68,8 +70,8 @@ struct PadState {
 };
 
 struct State {
-    std::array<PadState, N_PADS> pads;
-    std::array<MidiEventMessage, N_PADS> messages;
+    PadState pads[N_PADS];
+    MidiEventMessage messages[N_PADS];
 };
 
 MidiMessageType
@@ -97,7 +99,7 @@ struct PadInput {
 };
 
 struct Input {
-    std::array<PadInput, N_PADS> values;
+    PadInput values[N_PADS];
     long time; // milliseconds
 };
 
@@ -130,11 +132,11 @@ calculateStatePad(const PadState &previous, const PadInput input, const PadConfi
 
 void
 calculateMidiMessages(const State &state, const Config &config,
-    std::array<MidiEventMessage, N_PADS> &buffer) {
+    MidiEventMessage *buffer) {
 
     // TODO: check pre-condition buffer.size() == state.size() == config.size();
 
-    for (unsigned int i=0; i<state.pads.size(); i++) {
+    for (unsigned int i=0; i<N_PADS; i++) {
         const auto & pad = state.pads[i];
         const auto & cfg = config.pads[i];
         buffer[i] = \
@@ -148,7 +150,7 @@ calculateState(const State &previous, const Input &input, const Config &config) 
 
     // TODO: check pre-condition, all array sizes are the same
 
-    for (unsigned int i=0; i<next.pads.size(); i++) {
+    for (unsigned int i=0; i<N_PADS; i++) {
         next.pads[i] = calculateStatePad(previous.pads[i], input.values[i], config.pads[i]);
     }
 
