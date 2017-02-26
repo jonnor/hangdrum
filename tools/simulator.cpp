@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 #include <alsa/asoundlib.h>
 
@@ -122,7 +123,7 @@ std::vector<hangdrum::Input> read_events(std::string filename) {
 }
 
 json11::Json
-create_flowtrace(std::vector<hangdrum::State> history) {
+create_flowtrace(const std::vector<hangdrum::State> &history) {
 
     std::vector<flowtrace::Event> events;
 
@@ -130,6 +131,7 @@ create_flowtrace(std::vector<hangdrum::State> history) {
         using Ev = flowtrace::Event;
         const auto &p = state.pads[0]; // we just care about single/first set
         // TODO: take time into account here
+
         Ev in(p.raw);
         Ev lowpassed(p.lowpassed);
         Ev highpassed(p.highpassed);
@@ -139,13 +141,14 @@ create_flowtrace(std::vector<hangdrum::State> history) {
         events.push_back(lowpassed);
         events.push_back(highpassed);
 
-        for (int i=0; hangdrum::N_PADS; i++) {
+        for (int i=0; i<hangdrum::N_PADS; i++) {
             auto &m = state.messages[i];
             //Ev note(m);
             if (m.type != hangdrum::MidiMessageType::Nothing) {
                 //events.push_back(m);
             }
         }
+
     }
 
     // TODO: put a graph representation into the header
@@ -161,6 +164,14 @@ create_flowtrace(std::vector<hangdrum::State> history) {
         { "events", events },
     };
 
+}
+
+void
+write_flowtrace(std::string filename, const json11::Json &trace) {
+    const std::string serialized = trace.dump();
+    std::ofstream out(filename);
+    out << serialized;
+    out.close();
 }
 
 int main(int argc, char *argv[]) {
@@ -215,4 +226,9 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+    std::cout << "creating flowtrace" << std::endl;
+    auto trace = create_flowtrace(states);
+    const std::string trace_filename = "trace.json"; 
+    write_flowtrace(trace_filename, trace);
+    std::cout << "wrote trace to: " << trace_filename << std::endl;
 }

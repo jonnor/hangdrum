@@ -122,6 +122,7 @@ struct PadState {
 struct State {
     PadState pads[N_PADS];
     MidiEventMessage messages[N_PADS];
+    long time;
 };
 
 MidiMessageType
@@ -202,6 +203,7 @@ State
 calculateState(const State &previous, const Input &input, const Config &config) {
     State next = previous;
 
+    next.time = input.time;
     // TODO: check pre-condition, all array sizes are the same
 
     for (unsigned int i=0; i<N_PADS; i++) {
