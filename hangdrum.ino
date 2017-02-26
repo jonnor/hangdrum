@@ -1,39 +1,34 @@
 
 #include <CapacitiveSensor.h>
+#include <MIDIUSB.h>
 
 #include "./hangdrum.hpp"
 using namespace hangdrum;
 
 Config config;
 struct Sensors {
-  std::array<CapacitiveSensor, N_PADS> capacitive;
-} sensors;
+  CapacitiveSensor capacitive[1] = {
+    CapacitiveSensor(config.sendPin, config.pads[0].pin),
+  };
+};
+Sensors sensors;
 State state;
 
-#if 0
-void
-sendMessagesMidiUSB(std::array<MidiEventMessage, N_PADS> &messages) {
-    for ( const auto & m : messages ) {
-        if (m.type == MidiEventMessage::Nothing) {
+void sendMessagesMidiUSB(MidiEventMessage *messages) {
+    for (int i=0; i<N_PADS; i++) {
+        const auto &m = messages[i];
+        if (m.type == MidiMessageType::Nothing) {
             continue;
         }
         const midiEventPacket_t packet = {
-            m.type, 0x80 | m.channel, m.pitch, m.velocity
+            (uint8_t)m.type,
+            0x80 | m.channel,
+            m.pitch,
+            m.velocity,
         };
         MidiUSB.sendMIDI(packet);
     }
     MidiUSB.flush();
-}
-#endif
-
-void setup() {
-  //Pin setup
-  for (int i=0; i<config.pads.size(); i++) {
-    sensors.capacitive[i] = CapacitiveSensor(config.readPin, pad.pin);
-    pinMode(pad.pin, INPUT);
-  }
-
-  Serial.begin(115200);
 }
 
 Input readInputs() {
@@ -41,10 +36,20 @@ Input readInputs() {
 
   const uint8_t param = 20;
   current.time = millis();
-  for (int i=0; i<config.pads.size(); i++) {
+  for (int i=0; i<N_PADS; i++) {
     const int val = sensors.capacitive[i].capacitiveSensor(param);
-    current.values.capacitive[i] = val;
+    current.values[i].capacitance = val;
   }
+}
+
+void setup() {
+  //Pin setup
+  for (int i=0; i<N_PADS; i++) {
+    auto &pad = config.pads[i];
+    pinMode(pad.pin, INPUT);
+  }
+
+  Serial.begin(115200);
 }
 
 void loop(){
@@ -52,7 +57,7 @@ void loop(){
   Input input = readInputs();
   const long afterRead = millis();
 
-  state = hangdrum::calculateState(state, event, config);
+  state = hangdrum::calculateState(state, input, config);
   const long afterCalculation = millis();
   sendMessagesMidiUSB(state.messages);
   const long afterSend = millis();
