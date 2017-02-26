@@ -1,5 +1,9 @@
 
 #include "../hangdrum.hpp"
+#include "../flowtrace.hpp"
+
+#include <json11.hpp>
+#include <json11.cpp>
 
 #include <cstdio>
 #include <vector>
@@ -117,6 +121,48 @@ std::vector<hangdrum::Input> read_events(std::string filename) {
     return events;
 }
 
+json11::Json
+create_flowtrace(std::vector<hangdrum::State> history) {
+
+    std::vector<flowtrace::Event> events;
+
+    for (auto &state : history) {
+        using Ev = flowtrace::Event;
+        const auto &p = state.pads[0]; // we just care about single/first set
+        // TODO: take time into account here
+        Ev in(p.raw);
+        Ev lowpassed(p.lowpassed);
+        Ev highpassed(p.highpassed);
+        //Ev padstate(p.state);
+
+        events.push_back(in);
+        events.push_back(lowpassed);
+        events.push_back(highpassed);
+
+        for (int i=0; hangdrum::N_PADS; i++) {
+            auto &m = state.messages[i];
+            //Ev note(m);
+            if (m.type != hangdrum::MidiMessageType::Nothing) {
+                //events.push_back(m);
+            }
+        }
+    }
+
+    // TODO: put a graph representation into the header
+    using namespace json11;   
+    auto graph = Json::object {};
+
+    return Json::object {
+        { "header", Json::object {
+            { "graphs", Json::object {
+                { "default", graph },
+            }},
+        }},
+        { "events", events },
+    };
+
+}
+
 int main(int argc, char *argv[]) {
     const hangdrum::Config config;
     hangdrum::State state;
@@ -127,12 +173,15 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    out.open(14, 0);
-    const bool realTime = true;
+    const bool realTime = false;
+    if (realTime) {
+        out.open(14, 0);
+    }
 
     const std::string filename = argv[1];
     std::vector<hangdrum::Input> inputEvents = read_events(filename);
-    
+    std::vector<hangdrum::State> states;    
+
     long currentTime = 0;
     for (auto &event : inputEvents) {
         if (realTime) {
@@ -141,12 +190,13 @@ int main(int argc, char *argv[]) {
         currentTime = event.time;
 
         state = hangdrum::calculateState(state, event, config);
-        //printf("state: %d\n", state.pads[0].state);
-        //printf("value: %d\n", state.pads[0].value);
+        states.push_back(state);
 
         for ( auto & m : state.messages ) {
             if (m.type != hangdrum::MidiMessageType::Nothing) {
-                out.send(m);
+                if (realTime) {
+                    out.send(m);
+                }
             }
 
             switch (m.type) {

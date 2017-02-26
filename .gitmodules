@@ -1,0 +1,3 @@
+[submodule "thirdparty/json11"]
+	path = thirdparty/json11
+	url = https://github.com/dropbox/json11
