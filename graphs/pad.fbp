@@ -11,5 +11,6 @@ trigger -> note(StateToMidi) -> send(midi/SendUSB)
 '0' -> CHANNEL note
 '0.2' -> A lowpass
 '0.5' -> A highpass
+'100' -> THRESHOLD trigger
 '2' -> PIN read
 '1' -> SENDPIN read
