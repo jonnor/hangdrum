@@ -110,7 +110,7 @@ struct Config {
     const int8_t channel = 0;
     
     const int8_t sendPin = 1; // analog
-    const int threshold = 100;
+    const int threshold = 50;
     const int8_t velocity = 64;
     const float lowpass = 0.2;
     const float highpass = 0.5;
@@ -180,7 +180,8 @@ struct Input {
 };
 
 PadState
-calculateStatePad(const PadState &previous, const PadInput input, const PadConfig &config, const Config &appConfig) {
+calculateStatePad(const PadState &previous, const PadInput input,
+                  const PadConfig &config, const Config &appConfig) {
     using S = PadStateE;
     PadState next = previous;
 
