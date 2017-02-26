@@ -110,7 +110,9 @@ enum class PadStateE : int8_t {
 };
 
 struct PadState {
-    int value = 0;
+    int raw = 0;
+    int lowpassed = 0;
+    int value = 0;    
     PadStateE state = PadStateE::StayOff;
 };
 
@@ -154,7 +156,9 @@ calculateStatePad(const PadState &previous, const PadInput input, const PadConfi
     PadState next = previous;
 
     // Apply input
-    next.value = exponentialMovingAverage(input.capacitance, previous.value, appConfig.lowpass);
+    next.raw = input.capacitance;
+    next.lowpassed = exponentialMovingAverage(next.raw, previous.lowpassed, appConfig.lowpass);
+    next.value = next.lowpassed;
 
     // Move from transient states to stables ones
     next.state = (next.state == S::TurnOn) ? S::StayOn : next.state;
