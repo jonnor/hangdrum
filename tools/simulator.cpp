@@ -157,9 +157,13 @@ create_flowtrace(const std::vector<hangdrum::State> &history,
     const json11::Json graph = json11::Json::parse(graphData, parseError);
 
     // IIPs
-    flowtrace::Event th(config.threshold);
+    flowtrace::Event th(config.onthreshold);
     th.time = isotime(basetime, 0);
-    th.tgt = { "trigger", "threshold" };
+    th.tgt = { "trigger", "onthreshold" };
+    events.push_back(th);
+
+    th.data = config.offthreshold;
+    th.tgt = { "trigger", "offthreshold" };
     events.push_back(th);
 
     for (auto &state : history) {

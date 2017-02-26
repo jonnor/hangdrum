@@ -101,7 +101,6 @@ struct PadConfig {
     const uint8_t pin;
     const int8_t note;
     const int8_t velocity;
-    const int threshold;
 };
 
 static const int N_PADS = 10;
@@ -110,21 +109,22 @@ struct Config {
     const int8_t channel = 0;
     
     const int8_t sendPin = 1; // analog
-    const int threshold = 50;
+    const int onthreshold = 10;
+    const int offthreshold = -10;
     const int8_t velocity = 64;
     const float lowpass = 0.2;
     const float highpass = 0.5;
     const PadConfig pads[N_PADS] = {
-        { 2, midiNote(Note::D, octave), velocity, threshold },
-        { 3, midiNote(Note::D, octave), velocity, threshold },
-        { 4, midiNote(Note::E, octave), velocity, threshold },
-        { 5, midiNote(Note::F, octave), velocity, threshold },
-        { 6, midiNote(Note::G, octave), velocity, threshold },
-        { 7, midiNote(Note::A, octave), velocity, threshold },
-        { 8, midiNote(Note::B, octave), velocity, threshold },
-        { 9, midiNote(Note::C, octave+1), velocity, threshold },
-        { 10, midiNote(Note::C, octave+2), velocity, threshold },
-        { 11, midiNote(Note::D, octave+2), velocity, threshold }, // pad ext
+        { 2, midiNote(Note::D, octave), velocity },
+        { 3, midiNote(Note::D, octave), velocity },
+        { 4, midiNote(Note::E, octave), velocity },
+        { 5, midiNote(Note::F, octave), velocity },
+        { 6, midiNote(Note::G, octave), velocity },
+        { 7, midiNote(Note::A, octave), velocity },
+        { 8, midiNote(Note::B, octave), velocity },
+        { 9, midiNote(Note::C, octave+1), velocity },
+        { 10, midiNote(Note::C, octave+2), velocity },
+        { 11, midiNote(Note::D, octave+2), velocity }, // pad ext
     };
 };
 
@@ -190,7 +190,7 @@ calculateStatePad(const PadState &previous, const PadInput input,
     next.lowpassed = exponentialMovingAverage(input.capacitance, previous.lowpassed, appConfig.lowpass);
     next.highfilter = exponentialMovingAverage(input.capacitance, previous.highfilter, appConfig.highpass);
     next.highpassed = input.capacitance - next.highfilter;
-    next.value = next.lowpassed; // FIXME: does not trigged with highpassed
+    next.value = next.highpassed;
 
     // Move from transient states to stables ones
     next.state = (next.state == S::TurnOn) ? S::StayOn : next.state;
@@ -198,11 +198,11 @@ calculateStatePad(const PadState &previous, const PadInput input,
 
     // Change to new state
     if (next.state == S::StayOn) {
-        if (next.value < config.threshold) {
+        if (next.value < appConfig.offthreshold) {
             next.state = S::TurnOff;
         }
     } else if (next.state == S::StayOff) {
-        if (next.value > config.threshold) {
+        if (next.value > appConfig.onthreshold) {
             next.state = S::TurnOn;
         }
     } else {
