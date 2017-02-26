@@ -10,6 +10,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 #include <alsa/asoundlib.h>
 
@@ -122,20 +123,45 @@ std::vector<hangdrum::Input> read_events(std::string filename) {
     return events;
 }
 
+std::string isotime(time_t basetime, long millis) {
+    // XXX: HACK
+    const long seconds = millis/1000;
+    const long milliseconds = millis%1000;
+    const time_t time = basetime + seconds;
+    char buf[sizeof "2011-10-08T07:07:09.999Z"];
+    const size_t len = strftime(buf, sizeof buf, "%FT%TZ", gmtime(&time));
+    std::string str = std::string(buf);
+
+    std::ostringstream ms;
+    ms << "." << std::setw(3) << std::setfill('0') << milliseconds << "Z";
+    str.replace(len-1, len+4, ms.str());
+    return str;
+}
+
 json11::Json
 create_flowtrace(const std::vector<hangdrum::State> &history) {
 
     std::vector<flowtrace::Event> events;
+
+
+    time_t basetime;
+    time(&basetime);
 
     for (auto &state : history) {
         using Ev = flowtrace::Event;
         const auto &p = state.pads[0]; // we just care about single/first set
         // TODO: take time into account here
 
+        const std::string time = isotime(basetime, state.time);
+
         Ev in(p.raw);
+        in.time = time;
         Ev lowpassed(p.lowpassed);
+        lowpassed.time = time;
         Ev highpassed(p.highpassed);
+        highpassed.time = time;
         //Ev padstate(p.state);
+        // padstate.time = time;
 
         events.push_back(in);
         events.push_back(lowpassed);
@@ -144,6 +170,7 @@ create_flowtrace(const std::vector<hangdrum::State> &history) {
         for (int i=0; i<hangdrum::N_PADS; i++) {
             auto &m = state.messages[i];
             //Ev note(m);
+            // note.time = time;
             if (m.type != hangdrum::MidiMessageType::Nothing) {
                 //events.push_back(m);
             }
