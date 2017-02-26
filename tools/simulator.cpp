@@ -1,5 +1,5 @@
 
-#include "./hangdrum.hpp"
+#include "../hangdrum.hpp"
 
 #include <cstdio>
 #include <vector>
