@@ -50,7 +50,12 @@ Input readInputs() {
   current.time = millis();
   for (int i=0; i<N_PADS; i++) {
     const int val = sensors.capacitive[i].capacitiveSensor(param);
-    current.values[i].capacitance = val;
+    if (val > 0) {
+      current.values[i].capacitance = val;
+    } else {
+      // error/timeout
+      current.values[i].capacitance = 0;
+    }
   }
 }
 
@@ -80,7 +85,11 @@ void loop(){
           { val.value },
           beforeCalculation
       };
-      state = hangdrum::calculateState(state, input, config);
+      State next = state;
+      for (int i=0; i<100; i++) { // waste, to be able to profile
+         next = hangdrum::calculateState(state, input, config);
+      }
+      state = next;
       const long afterCalculation = millis();
 
       Serial.print("calculating: ");
