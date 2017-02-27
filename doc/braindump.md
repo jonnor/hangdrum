@@ -1,17 +1,18 @@
 
 ## TODO
 
-Post
+Quick experimentation
 
-* Automated test using host-simulator.
-Take input .log file, produce a flowtrace, load and check the trace.
 * Unhardcode filenames/options in simulator.
 * Expose key config parameters for simulator. Commandline? Threshold,filters
 * Make the trace plotting automatically update on changing values.
 Listen to file change on disk?
+* A file that declares current "experiments" and allows manipulating them
 
 Sanity
 
+* Automated test using host-simulator.
+Take input .log file, produce a flowtrace, load and check the trace.
 * Setup Travis CI, run host tests and device build there
 
 Prototype-quality
@@ -125,4 +126,36 @@ Can count the number of times the deadline is exceeded per some time period, and
 Ability to record a syncronized video-stream together with the capacitive sensor values.
 If recording is done by a single host, can do rough sync there.
 Use an LED "clapper" to do higher fidelity syncronization?
-Ideally with a high-speed camera, so one can.
+Ideally with a high-speed camera, so one can really see the details of how the fingers move on the pads.
+
+If we also have an audio stream, can we use the audible taps as guides for when we should have detections?
+
+
+## References
+
+Capacitive touch sensors
+
+* Linear Touch slider. Using
+* Rotary/radial slider.
+[Youtube vid](https://www.youtube.com/watch?v=kWCsBwKYi9E). AVR software-based linear and rotary slider, shows the PCB patterns.
+[Intro to capacitive sensing](http://patternagents.com/news/2013/11/20/capacitive-sensing-introduction.html), OSHW touch widgets library. [Eagle files](https://github.com/PatternAgents/PCB_Libraries/tree/master/eagle6/lbr).
+* Liquid level sensing.
+[Instructables: How Capacitive Liquid Level Sensors Work](http://www.instructables.com/id/Building-a-Capacitive-Liquid-Sensor/).
+Using foil outside a water bottle as the electrodes. Includes some (very basic) Arduino code.
+A suggestion in a Youtube video comment was to have a separate capacitance sensor at the bottom of tank, and use this as a reference
+for comparing the height value to. This may be able to compensate a bit for changes in temperature, water composition etc.
+* [Soundplane 8x8](http://madronalabs.com/DIY). Multitouch pad.
+Uses 8 rows x 8 columns on top of eachother, being capacitively coupled.
+Audio-rate frequencies injected into each of the rows, and then read out from the columns.
+* DisneyResearch: [Touche](https://www.youtube.com/watch?v=E4tYpXVTjxA),
+gesture-sensing based on swept-frequency capacitive reading.
+Video shows a number of applications of objects and even the body as a sensor unit.
+* DisneyResearch: [EM-Sense](https://www.youtube.com/watch?v=fpKDNle6ia4),
+object identification based on their capacitive profiles, read by a smartwatch.
+* FreeScale: [AN3863 Designing Touch Sensing Electrodes](http://cache.freescale.com/files/sensors/doc/app_note/AN3863.pdf).
+Gives many recommendations on how to shape and lay out touch-sensing electrodes on flexible or regular PCBs.
+* NXP: [Proximity Capacitive Sensor Technology for Touch Sensing Applications](http://cache.freescale.com/files/sensors/doc/white_paper/PROXIMITYWP.pdf). Shows using multiple electrodes, where one electrode is charged, and the finger creates a capacitive path to another electrode connected to ground. Brief mention of 8-pad rotary endocder, liquid sensing
+* Rotary capacitive encoder / capacitive resolver.
+[Open Source Ecology](http://opensourceecology.org/wiki/Rotary_encoder), design for a 48 step, 100x iterpolating resoler, 0.075 degrees resolution.
+Includes some Arduino code, and a SPICE electronics model.
+

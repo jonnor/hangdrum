@@ -20,7 +20,8 @@ It can run on a Arduino-compatible microcontroller (tested on Arduino Leonardo),
 A single `State` datastructure holds all state. The program logic is expressed as a pure function of new Input and current State:
 `State next = calculateState(const Input inputs, const State current)`.
 Both Input and State are plain-old-data which can be safely serialized and de-serialized.
-Functions to read the current Input, and to "realize" a State form the Hardware Abstraction Layer.
+The Hardware Abstraction Layer, which has real-life side-effects, consists of:
+A function to read current Input, and a function to "realize" a State.
 
 This formulation allows us to:
 
@@ -32,6 +33,8 @@ This formulation allows us to:
 
 Wanderers of non-traditional programming methods may recognize inspirations from (Extended) Finite State Machines,
 Functional Reactive Programming and Dataflow/Flow-based-programming.
+And basically a rejection of Object Oriented Programming (as typically practiced in C++/Java/Python/..),
+particularly the idea of combining data and methods that operate on the data into a single class.
 
 ## Status
 *Experimental*. Never actually been ran on the real hardware ;)
