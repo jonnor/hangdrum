@@ -109,8 +109,8 @@ struct Config {
     const int8_t channel = 0;
     
     const int8_t sendPin = 1; // analog
-    const int onthreshold = 10;
-    const int offthreshold = -10;
+    const int onthreshold = 60;
+    const int offthreshold = 40;
     const int8_t velocity = 64;
     const float lowpass = 0.2;
     const float highpass = 0.5;
@@ -190,7 +190,7 @@ calculateStatePad(const PadState &previous, const PadInput input,
     next.lowpassed = exponentialMovingAverage(input.capacitance, previous.lowpassed, appConfig.lowpass);
     next.highfilter = exponentialMovingAverage(input.capacitance, previous.highfilter, appConfig.highpass);
     next.highpassed = input.capacitance - next.highfilter;
-    next.value = next.highpassed;
+    next.value = next.raw;
 
     // Move from transient states to stables ones
     next.state = (next.state == S::TurnOn) ? S::StayOn : next.state;
