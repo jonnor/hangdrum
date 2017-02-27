@@ -12,12 +12,26 @@ trying to find a programming model and set of tooling which facilitates:
 * Understanding how the software works wrt to the problem
 * Automated verification of the device behavior against set specifications
 
+## Architecture
+
 The [core](./hangdrum.hpp) of the firmware is platform and I/O independent, written in C++11.
 It can run on a Arduino-compatible microcontroller (tested on Arduino Leonardo), or on a host computer (tested on Arch Linux).
 
-The programming style is inspired by [Functional Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming).
-A single `State` datastructure holds all state. The program logic is expressed as a pure function of inputs and current State:
-`State next = calculateState(Input inputs, State previous)`.
+A single `State` datastructure holds all state. The program logic is expressed as a pure function of new Input and current State:
+`State next = calculateState(const Input inputs, const State current)`.
+Both Input and State are plain-old-data which can be safely serialized and de-serialized.
+Functions to read the current Input, and to "realize" a State form the Hardware Abstraction Layer.
+
+This formulation allows us to:
+
+* *trace* the execution of the program, by capturing and storing the `Input, State` pairs.
+* *replay* a trace, by taking the `Input` and applying it to a modified program
+* *visualize* a whole-program execution from its trace, both end-results and intermediates
+* *test* a whole-program execution, by applying checks against the generated trace
+* *simulate* new scenarios by synthesizing or mutating Input
+
+Wanderers of non-traditional programming methods may recognize inspirations from (Extended) Finite State Machines,
+Functional Reactive Programming and Dataflow/Flow-based-programming.
 
 ## Status
 *Experimental*. Never actually been ran on the real hardware ;)
