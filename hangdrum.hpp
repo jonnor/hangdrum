@@ -108,7 +108,7 @@ struct Config {
     const int8_t octave = 4;
     const int8_t channel = 0;
     
-    const int8_t sendPin = 1; // analog
+    const int8_t sendPin = 12; // analog
     const int onthreshold = 40;
     const int offthreshold = -10;
     const int8_t velocity = 64;
