@@ -26,20 +26,23 @@ Parser parser;
 
 #ifndef EMULATE_INPUTS
 void sendMessagesMidiUSB(MidiEventMessage *messages) {
+    int packetsSent = 0;
     for (int i=0; i<N_PADS; i++) {
         const auto &m = messages[i];
+        midiEventPacket_t packet;
         if (m.type == MidiMessageType::Nothing) {
             continue;
-        }
-        const midiEventPacket_t packet = {
-            (uint8_t)m.type,
-            0x80 | m.channel,
-            m.pitch,
-            m.velocity,
+        } else if (m.type == MidiMessageType::NoteOn) {
+            packet = { 0x09, 0x90 | m.channel, m.pitch, m.velocity };
+        } else if (m.type == MidiMessageType::NoteOff) {
+            packet = { 0x08, 0x80 | m.channel, m.pitch, m.velocity };
         };
         MidiUSB.sendMIDI(packet);
+        packetsSent++;
     }
-    MidiUSB.flush();
+    if (packetsSent) {
+      MidiUSB.flush();
+    }
 }
 #endif
 
@@ -50,13 +53,14 @@ Input readInputs() {
   current.time = millis();
   for (int i=0; i<N_PADS; i++) {
     const int val = sensors.capacitive[i].capacitiveSensor(param);
-    if (val > 0) {
+    if (val >= 0) {
       current.values[i].capacitance = val;
     } else {
       // error/timeout
       current.values[i].capacitance = 0;
     }
   }
+  return current;
 }
 
 void setup() {
@@ -64,18 +68,21 @@ void setup() {
   for (int i=0; i<N_PADS; i++) {
     auto &pad = config.pads[i];
     pinMode(pad.pin, INPUT);
+    auto &s = sensors.capacitive[i];
+    s.set_CS_Timeout_Millis(4);
   }
+  pinMode(config.sendPin, OUTPUT);
 
   Serial.begin(115200);
 }
 
 void loop(){
   const long beforeRead = millis();
-  //Input input = readInputs();
+  const Input input = readInputs();
   const long afterRead = millis();
 
-  //state = hangdrum::calculateState(state, input, config);
-  //const long afterCalculation = millis();
+  state = hangdrum::calculateState(state, input, config);
+  const long afterCalculation = millis();
 
   while (Serial.available()) {
     Parser::DelayValue val = parser.push(Serial.read());
@@ -107,10 +114,14 @@ void loop(){
   const long afterSend = millis();
 
   const long readingTime = afterRead-beforeRead;
-  //Serial.print("(");
-  //Serial.print(readingTime);
-  //Serial.print(",");
-  //Serial.print(input.values[0].capacitance);
-  //Serial.println(")");
+  Serial.print("(");
+  Serial.print(readingTime);
+  Serial.print(",");
+  Serial.print(input.values[0].capacitance);
+  Serial.println(")");
+
+  // Note: if nothing reads the MIDI port, sending takes 250ms!
+  //Serial.print("sending time: ");
+  //Serial.println(afterSend-afterCalculation);
 }
 
