@@ -17,7 +17,6 @@ struct Sensors {
     CapacitiveSensor(config.sendPin, config.pads[6].pin),
     CapacitiveSensor(config.sendPin, config.pads[7].pin),
     CapacitiveSensor(config.sendPin, config.pads[8].pin),
-    CapacitiveSensor(config.sendPin, config.pads[9].pin),
   };
 };
 Sensors sensors;

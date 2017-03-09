@@ -101,30 +101,28 @@ struct PadConfig {
     const uint8_t pin;
     const int8_t note;
     const int8_t velocity;
+    const int8_t channel;
 };
 
-static const int N_PADS = 10;
-struct Config {
-    const int8_t octave = 4;
-    const int8_t channel = 0;
-    
+static const int N_PADS = 9;
+struct Config {    
     const int8_t sendPin = 12; // analog
-    const int onthreshold = 120;
-    const int offthreshold = 100;
+    const int8_t octave = 4;
+    const int onthreshold = 30;
+    const int offthreshold = 20;
     const int8_t velocity = 64;
     const float lowpass = 0.5;
     const float highpass = 0.15;
     const PadConfig pads[N_PADS] = {
-        { 2, midiNote(Note::D, octave), velocity },
-        { 3, midiNote(Note::D, octave), velocity },
-        { 4, midiNote(Note::E, octave), velocity },
-        { 5, midiNote(Note::F, octave), velocity },
-        { 6, midiNote(Note::G, octave), velocity },
-        { 7, midiNote(Note::A, octave), velocity },
-        { 8, midiNote(Note::B, octave), velocity },
-        { 9, midiNote(Note::C, octave+1), velocity },
-        { 10, midiNote(Note::C, octave+2), velocity },
-        { 11, midiNote(Note::D, octave+2), velocity }, // pad ext
+        { 2, midiNote(Note::D, octave), velocity, 1 },
+        { 3, midiNote(Note::D, octave), velocity, 2 },
+        { 4, midiNote(Note::E, octave), velocity, 3 },
+        { 5, midiNote(Note::F, octave), velocity, 4 },
+        { 6, midiNote(Note::G, octave), velocity, 5 },
+        { 7, midiNote(Note::A, octave), velocity, 6 },
+        { 8, midiNote(Note::B, octave), velocity, 7 },
+        { 9, midiNote(Note::C, octave+1), velocity, 8 },
+        { 10, midiNote(Note::C, octave+2), velocity, 9 },
     };
 };
 
@@ -221,7 +219,7 @@ calculateMidiMessages(const State &state, const Config &config,
         const auto & pad = state.pads[i];
         const auto & cfg = config.pads[i];
         buffer[i] = \
-            { eventFromState(pad), config.channel, cfg.note, cfg.velocity };
+            { eventFromState(pad), cfg.channel, cfg.note, cfg.velocity };
     }
 };
 
