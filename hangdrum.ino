@@ -49,7 +49,7 @@ void sendMessagesMidiUSB(MidiEventMessage *messages) {
 Input readInputs() {
   Input current;
 
-  const uint8_t param = 20;
+  const uint8_t param = 10;
   current.time = millis();
   for (int i=0; i<N_PADS; i++) {
     const int val = sensors.capacitive[i].capacitiveSensor(param);
@@ -69,13 +69,14 @@ void setup() {
     auto &pad = config.pads[i];
     pinMode(pad.pin, INPUT);
     auto &s = sensors.capacitive[i];
-    s.set_CS_Timeout_Millis(4);
+    s.set_CS_Timeout_Millis(2);
   }
   pinMode(config.sendPin, OUTPUT);
 
   Serial.begin(115200);
 }
 
+long previousSend = 0;
 void loop(){
   const long beforeRead = millis();
   const Input input = readInputs();
@@ -112,8 +113,9 @@ void loop(){
   sendMessagesMidiUSB(state.messages);
 #endif
   const long afterSend = millis();
+  const long readingTime = afterRead-previousSend;
+  previousSend = millis();
 
-  const long readingTime = afterRead-beforeRead;
   Serial.print("(");
   Serial.print(readingTime);
   Serial.print(",");
