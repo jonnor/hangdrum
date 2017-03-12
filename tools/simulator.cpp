@@ -161,6 +161,33 @@ write_flowtrace(std::string filename, const json11::Json &trace) {
     out.close();
 }
 
+void
+simulatorRealizeState(const hangdrum::State &state,
+                      alsa::Output &out, bool realTime) {
+    for ( auto & m : state.messages ) {
+        if (m.type != hangdrum::MidiMessageType::Nothing) {
+            if (realTime) {
+                out.send(m);
+            }
+        }
+
+        switch (m.type) {
+        case hangdrum::MidiMessageType::Nothing:
+            // ignored, no-op
+            break;
+        case hangdrum::MidiMessageType::NoteOn:
+            printf("NOTE ON: %d\n", m.pitch);
+            break;
+        case hangdrum::MidiMessageType::NoteOff:
+            printf("NOTE OFF: %d\n", m.pitch);
+            break;
+        default:
+            printf("WARNING: Unknown MIDI message %d\n", (int)m.type);
+            break;
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     const hangdrum::Config config;
     hangdrum::State state;
@@ -190,28 +217,7 @@ int main(int argc, char *argv[]) {
         state = hangdrum::calculateState(state, event, config);
         states.push_back(state);
 
-        for ( auto & m : state.messages ) {
-            if (m.type != hangdrum::MidiMessageType::Nothing) {
-                if (realTime) {
-                    out.send(m);
-                }
-            }
-
-            switch (m.type) {
-            case hangdrum::MidiMessageType::Nothing:
-                // ignored, no-op
-                break;
-            case hangdrum::MidiMessageType::NoteOn:
-                printf("NOTE ON: %d\n", m.pitch);
-                break;
-            case hangdrum::MidiMessageType::NoteOff:
-                printf("NOTE OFF: %d\n", m.pitch);
-                break;
-            default:
-                printf("WARNING: Unknown MIDI message %d\n", (int)m.type);
-                break;
-            }
-        }
+        simulatorRealizeState(state, out, realTime);
     }
     std::cout << "creating flowtrace" << std::endl;
     auto trace = create_flowtrace(states, config);
