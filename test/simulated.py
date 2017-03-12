@@ -11,6 +11,7 @@ def simulate(sensorpath, tracepath, options):
     options_string = json.dumps(options)
     args = ['./bin/simulator', sensorpath, options_string, tracepath]
     out = subprocess.check_output(args)
+    print out
     time.sleep(1)
     tracefile = open(tracepath, 'r')
     trace = tracefile.read()
