@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/jonnor/hangdrum.svg?branch=master)](https://travis-ci.org/jonnor/hangdrum)
 # Hangdrum
 
 Firmware for a MIDI hang-drum using capacitive touch pads.
