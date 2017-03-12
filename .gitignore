@@ -1,3 +1,4 @@
 node_modules/
 graphs/*.json
 bin/simulator
+*.pyc

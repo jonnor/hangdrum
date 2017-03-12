@@ -1,0 +1,16 @@
+cases:
+-
+  name: 'Finger versus palm'
+  assertion: 'should trigger correctly'
+  inputs:
+    sensor: './data/deriv/finger-versus-palm.log'
+    highpass: 0.4
+    lowpass: 0.2
+    notes:
+      - { start: 9.96, stop: 11.35 }
+      - { start: 0.60, stop: 3.2 }
+  expect:
+    detected:
+      equal: 2
+    distance:
+      below: 0.1
