@@ -1,4 +1,8 @@
 dist: trusty
+addons:
+  apt:
+    packages:
+    - libasound2-dev
 language: python
 python:
 - '2.7'
