@@ -11,4 +11,4 @@ before_install:
 before_script:
 - make
 script:
-- nosetests2 test/*.py
+- nosetests test/*.py
