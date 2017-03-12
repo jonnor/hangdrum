@@ -32,13 +32,12 @@ def check_triggering(testcase):
     testoptions = copy.copy(testcase['inputs'])
     sensorpath = testoptions['sensor']  
     del testoptions['sensor']
-    del testoptions['notes']
 
     trace = simulate(sensorpath, tracepath, testoptions)
     note_events = filter(data_to('send', 'in'), trace['events'])
 
     expected_notes = testcase['expect']['detected']['equal']
-    actual_notes = len(note_events)
+    actual_notes = len(note_events)/2 # XXX: assuming matching note on/off
     assert actual_notes == expected_notes, \
             "number of notes %d != %d" % (actual_notes, expected_notes)
 
