@@ -189,7 +189,6 @@ simulatorRealizeState(const hangdrum::State &state,
 }
 
 int main(int argc, char *argv[]) {
-    const hangdrum::Config config;
     hangdrum::State state;
     alsa::Output out;
 
@@ -197,6 +196,21 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: hangdrum-simulate ./inputs.log\n");
         return -1;
     }
+
+    std::string trace_filename = "trace.json";
+
+    json11::Json options;
+    if (argc > 2) {
+        std::string err;
+        options = json11::Json::parse(argv[2], err);
+    }
+    hangdrum::Config config(options);
+
+    if (argc > 3) {
+        trace_filename = argv[3];
+    }
+
+    std::cout << json11::Json(config).dump() << std::endl;
 
     const bool realTime = false;
     if (realTime) {
@@ -221,7 +235,6 @@ int main(int argc, char *argv[]) {
     }
     std::cout << "creating flowtrace" << std::endl;
     auto trace = create_flowtrace(states, config);
-    const std::string trace_filename = "trace.json"; 
     write_flowtrace(trace_filename, trace);
     std::cout << "wrote trace to: " << trace_filename << std::endl;
 }

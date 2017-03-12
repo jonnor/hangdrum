@@ -106,13 +106,13 @@ struct PadConfig {
 
 static const int N_PADS = 9;
 struct Config {    
-    const int8_t sendPin = 12; // analog
-    const int8_t octave = 4;
-    const int onthreshold = 30;
-    const int offthreshold = 20;
-    const int8_t velocity = 64;
-    const float lowpass = 0.5;
-    const float highpass = 0.15;
+    int8_t sendPin = 12; // analog
+    int8_t octave = 4;
+    int8_t velocity = 64;
+    int onthreshold = 30;
+    int offthreshold = 20;
+    float lowpass = 0.5;
+    float highpass = 0.15;
     const PadConfig pads[N_PADS] = {
         { 2, midiNote(Note::D, octave), velocity, 1 },
         { 3, midiNote(Note::D, octave), velocity, 2 },
@@ -124,6 +124,40 @@ struct Config {
         { 9, midiNote(Note::C, octave+1), velocity, 8 },
         { 10, midiNote(Note::C, octave+2), velocity, 9 },
     };
+
+
+#ifdef HAVE_JSON11
+    Config(const json11::Json &json) {
+        //Config config;
+        json11::Json::object obj = json.object_items();
+        for (auto& kv : obj) {
+            const std::string key = kv.first;
+            const auto &value = kv.second;
+            if (key == "onthreshold") {
+                this->onthreshold = value.number_value();
+            } else if (key == "offthreshold") {
+                this->offthreshold = value.number_value();
+            } else if (key == "lowpass") {
+                this->lowpass = value.number_value();
+            } else if (key == "highpass") {
+                this->highpass = value.number_value();
+            } else {
+                // unknown key
+            }
+        }
+    }
+
+    json11::Json to_json() const {
+        using namespace json11;
+        return Json::object {
+            {"onthreshold", onthreshold},
+            {"offthreshold", offthreshold},
+            {"lowpass", lowpass},
+            {"highpass", highpass},
+        };
+    }
+
+#endif
 };
 
 enum class PadStateE : int8_t {
