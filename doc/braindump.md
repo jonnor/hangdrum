@@ -159,3 +159,97 @@ Gives many recommendations on how to shape and lay out touch-sensing electrodes 
 [Open Source Ecology](http://opensourceecology.org/wiki/Rotary_encoder), design for a 48 step, 100x iterpolating resoler, 0.075 degrees resolution.
 Includes some Arduino code, and a SPICE electronics model.
 
+## Blogging notes
+
+Around 'understanding embedded systems'
+
+### Can we support more advanced features?
+
+On/off triggering can make for a usable & fun musical intrument, but the expressiveness is somewhat limited.
+
+Existing MIDI drums and keyboards often send a velocity for notes triggered. This is a value representing how how hard a pad or key is being hit.
+This is primarily mapped to the volume of the note, but often other qualities of the sound changes a bit too.
+For instance, a trumpet (or an emulation thereof) played hard sounds distorted and has more overtones compared to when played softly.
+
+Old-school keyboards would use two microswitches, and use the time between them to determine velocity.
+
+
+Theoretically we can track how quickly a capacitive sensor pad is being hit.
+But can we sample the sensor often enough, with a low enough noise level to have the required data?
+And can we do the required filtering in real-time on the processor?
+
+Do we have the required input data?
+Only 1-3 values from not touching to touching. Not really enough.
+
+### End-product QA
+
+The tooling built could be reused in manufacturing QA for testing each completed unit.
+A testing procedure could specify to tap each of the sensor pads, and the system recording and verifying that the input signals are within expected ranges and that.
+
+### More features
+
+Some keyboards support Aftertouch, which allows to modulate a value after triggering a note, usually by pressing the keys down harder.
+This can be mapped to any parameter of the synthesizer, like changing pitch, amplitude or modulating a filter or low-frequency oscillator.
+When playing a violin sound it could for instance be mapped to vibrato.
+https://www.youtube.com/watch?v=AsFQBm5X9mw
+
+### Prevalence
+
+98% of microprocessor chips go into embedded devices. 1% to personal computers
+http://www.icinsights.com/news/bulletins/Microcontroller-Unit-Shipments-Surge-But-Falling-Prices-Sap-Sales-Growth/
+
+### "debugging"
+
+I don't like this term much.
+Suggests that written code code mostly works, except for some minor bugs.
+But often the design is flawed. Based on assumptions or misunderstandings.
+Sometimes it can be obvious (when using system) that it doesnt work.
+But it can also be something which only occurs occationally or rarely.
+Sometimes people make workaround so you never hear about it.
+Learning (about the problem, about the solution).
+Increasing understanding
+
+### Tractability of embedded systems
+
+Dedicated/fixed functionality is usually the savior,
+that makes problem tractable with all the other constraints.
+Complexity is growing however. "smart devices", "internet of things"
+
+### More on cap sensors
+
+Capacitive sensors are nice because they are very simple in principle, and yet can be adapted to many different cases.
+The easiest usage is for a on/off switch, but they can also be used easily as a distance/proximity sensor.
+More advanced input devices include linear sliders and rotary/radial sliders (like on the iPod).
+And of course the touchscreen of your mobile phone or tablet.
+On the bleeding edge is using capacitive sensing to make everyday objects become gesture sensors, and for physical object detection.
+
+The CapacitiveSensor library does a couple of things to help with this.
+A number of samples are read and integrated by summing them.
+It keeps track of the minimum capacitance seen, and subtracts this.
+
+The capacitor stores electrical energy. By charging it, and measuring how long it takes to discharge we can.
+
+There are also some challenges. First, unless your microcontroller has dedicated capacitive support the reading the sensor values must be done using some pretty low-level bitbanging.
+The sensor data is likely to be quite noisy, possibly from cross-talk from other sensors, induced electromagnetic interference.
+There will be variation in the readings depending of temperature and humidity.
+Values will be different if your device is on battery power or connected earth-ground through a powersupply connected to mains power.
+
+The contact sensor can be anything which is conductive, and in any shape.
+It can be covered, also by non-conductive materials.
+No moving parts.
+And it can be
+Use copper foil tape to integrate it into the body of your device.
+Or trace it directly into the PCB of your electronics.
+Or use the PCB as the casing! Linky
+
+It also requires very little external hardware or special features from the microcontroller.
+Two resistors. Reading can be done in software.
+
+### Lack of online information
+
+One challenge compared to many other aspects of software programming is that there is way less (good)
+information available online. Embedded software development, compared to say web development,
+happens in a more traditional, inside-a-company, university-educated-people.
+A lot of "tribal" knowledge doesn't make it out there. 
+Changing with Arduino, Raspberry Pi, physical computing becoming part of education, AdaFruit. Hacker and makerspaces.
+
