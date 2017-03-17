@@ -51,4 +51,6 @@ Can run in real-time, producing ALSA MIDI output. Or in faster-than-realtime, pr
 
 ## More
 
+* Blogpost: [Host-based simulation for embedded systems](http://www.jonnor.com/2017/03/host-based-simulation-for-embedded-systems/)
+
 See [the braindump](./doc/braindump.md)
