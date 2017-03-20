@@ -112,7 +112,7 @@ struct Config {
     float lowpass = 0.5;
     float highpass = 0.15;
     const PadConfig pads[N_PADS] = {
-        { midiNote(Note::D, octave), velocity, 1 },
+        { midiNote(Note::C, octave), velocity, 1 },
         { midiNote(Note::D, octave), velocity, 2 },
         { midiNote(Note::E, octave), velocity, 3 },
         { midiNote(Note::F, octave), velocity, 4 },
