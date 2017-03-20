@@ -7,16 +7,17 @@ using namespace hangdrum;
 
 Config config;
 struct Sensors {
+  const int sendPin = A1;
   CapacitiveSensor capacitive[N_PADS] = {
-    CapacitiveSensor(config.sendPin, config.pads[0].pin),
-    CapacitiveSensor(config.sendPin, config.pads[1].pin),
-    CapacitiveSensor(config.sendPin, config.pads[2].pin),
-    CapacitiveSensor(config.sendPin, config.pads[3].pin),
-    CapacitiveSensor(config.sendPin, config.pads[4].pin),
-    CapacitiveSensor(config.sendPin, config.pads[5].pin),
-    CapacitiveSensor(config.sendPin, config.pads[6].pin),
-    CapacitiveSensor(config.sendPin, config.pads[7].pin),
-    CapacitiveSensor(config.sendPin, config.pads[8].pin),
+    CapacitiveSensor(sendPin, 2),
+    CapacitiveSensor(sendPin, 3),
+    CapacitiveSensor(sendPin, 4),
+    CapacitiveSensor(sendPin, 5),
+    CapacitiveSensor(sendPin, 6),
+    CapacitiveSensor(sendPin, 7),
+    CapacitiveSensor(sendPin, 8),
+    CapacitiveSensor(sendPin, 9),
+    CapacitiveSensor(sendPin, 10),
   };
 };
 Sensors sensors;
@@ -63,14 +64,12 @@ Input readInputs() {
 }
 
 void setup() {
-  //Pin setup
+  // Note: pin setup is done automatically by CapacitiveSensor
+
   for (int i=0; i<N_PADS; i++) {
-    auto &pad = config.pads[i];
-    pinMode(pad.pin, INPUT);
     auto &s = sensors.capacitive[i];
     s.set_CS_Timeout_Millis(2);
   }
-  pinMode(config.sendPin, OUTPUT);
 
   Serial.begin(115200);
 }

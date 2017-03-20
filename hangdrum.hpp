@@ -98,15 +98,13 @@ private:
 
 // App things
 struct PadConfig {
-    const uint8_t pin;
     const int8_t note;
     const int8_t velocity;
     const int8_t channel;
 };
 
 static const int N_PADS = 9;
-struct Config {    
-    int8_t sendPin = 12; // analog
+struct Config {
     int8_t octave = 4;
     int8_t velocity = 64;
     int onthreshold = 30;
@@ -114,15 +112,15 @@ struct Config {
     float lowpass = 0.5;
     float highpass = 0.15;
     const PadConfig pads[N_PADS] = {
-        { 2, midiNote(Note::D, octave), velocity, 1 },
-        { 3, midiNote(Note::D, octave), velocity, 2 },
-        { 4, midiNote(Note::E, octave), velocity, 3 },
-        { 5, midiNote(Note::F, octave), velocity, 4 },
-        { 6, midiNote(Note::G, octave), velocity, 5 },
-        { 7, midiNote(Note::A, octave), velocity, 6 },
-        { 8, midiNote(Note::B, octave), velocity, 7 },
-        { 9, midiNote(Note::C, octave+1), velocity, 8 },
-        { 10, midiNote(Note::C, octave+2), velocity, 9 },
+        { midiNote(Note::D, octave), velocity, 1 },
+        { midiNote(Note::D, octave), velocity, 2 },
+        { midiNote(Note::E, octave), velocity, 3 },
+        { midiNote(Note::F, octave), velocity, 4 },
+        { midiNote(Note::G, octave), velocity, 5 },
+        { midiNote(Note::A, octave), velocity, 6 },
+        { midiNote(Note::B, octave), velocity, 7 },
+        { midiNote(Note::C, octave+1), velocity, 8 },
+        { midiNote(Note::C, octave+2), velocity, 9 },
     };
 
 
