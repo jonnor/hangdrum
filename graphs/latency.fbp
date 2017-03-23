@@ -1,0 +1,9 @@
+
+# Arduino
+read(hangdrum/ReadSensors) -> trigger(hangdrum/DetectHit) -> sendMidi(arduino/SendUSBMidi)
+
+# PC
+receiveMidi(kernel/ReceiveUSBMidi) -> deliverMidi(kernel/DeliverMidi) -> renderSound(app/FillSoundBuffer) -> outputSound(kernel/PlaySound) -> noop(Noop)
+
+# connection between them
+sendMidi -> receiveMidi
