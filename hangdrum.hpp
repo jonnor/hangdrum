@@ -107,8 +107,8 @@ static const int N_PADS = 9;
 struct Config {
     int8_t octave = 4;
     int8_t velocity = 64;
-    int onthreshold = 30;
-    int offthreshold = 20;
+    int onthreshold = 55;
+    int offthreshold = 45;
     float lowpass = 0.5;
     float highpass = 0.15;
     const PadConfig pads[N_PADS] = {
