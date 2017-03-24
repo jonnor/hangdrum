@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
     alsa::Output out;
 
     if (argc < 2) {
-        fprintf(stderr, "Usage: hangdrum-simulate ./inputs.log\n");
+        fprintf(stderr, "Usage: hangdrum-simulate ./inputs.log [{ \"onthreshold\": ... }] [trace.json]\n");
         return -1;
     }
 
