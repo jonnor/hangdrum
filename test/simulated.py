@@ -10,6 +10,7 @@ import json
 def simulate(sensorpath, tracepath, options):
     options_string = json.dumps(options)
     args = ['./bin/simulator', sensorpath, options_string, tracepath]
+    print ' '.join(args)
     out = subprocess.check_output(args)
     print out
     time.sleep(1)
@@ -49,3 +50,9 @@ def test_triggering():
     for testcase in tests['cases']:
         yield check_triggering, testcase
 
+def main():
+    for func, data in test_triggering():
+        func(data)
+
+if __name__ == '__main__':
+    main()
