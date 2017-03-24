@@ -1,0 +1,51 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="topsense-10sample-jacklinux-128lmms-20170309_181721_data" version="1.3.0" audacityversion="2.1.2" sel0="1.1127741936" sel1="1.3277533603" vpos="176" h="0.8731182796" zoom="1660.7142857143" rate="48000.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+	<tags/>
+	<wavetrack name="topsense-10sample-jacklinux-128lmms-20170309_181721" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="279552">
+				<waveblock start="0">
+					<simpleblockfile filename="e000086f.au" len="262144" min="-0.412249" max="0.353362" rms="0.034576"/>
+				</waveblock>
+				<waveblock start="262144">
+					<simpleblockfile filename="e0000aeb.au" len="17408" min="-0.005292" max="0.004395" rms="0.000427"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="topsense-10sample-jacklinux-128lmms-20170309_181721" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="1.14197849">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="1662">
+				<waveblock start="0">
+					<simpleblockfile filename="e000030d.au" len="1662" min="-0.145405" max="0.138073" rms="0.004636"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="topsense-10sample-jacklinux-128lmms-20170309_181721" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="1.18111828">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="4523">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000c6b.au" len="4523" min="-0.400289" max="0.352319" rms="0.024283"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="topsense-10sample-jacklinux-128lmms-20170309_181721" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="1.13415054">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="7154">
+				<waveblock start="0">
+					<simpleblockfile filename="e00004af.au" len="7154" min="-0.8913" max="0.784488" rms="0.055048"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<labeltrack name="Label Track" numlabels="1" height="73" minimized="0" isSelected="0">
+		<label t="1.1455913979" t1="1.1874408603" title="dt=42ms"/>
+	</labeltrack>
+</project>

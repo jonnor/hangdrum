@@ -1,8 +1,8 @@
 <?xml version="1.0" standalone="no" ?>
 <!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
-<project xmlns="http://audacity.sourceforge.net/xml/" projname="topsense-10sample-lmms-asio-20170309_195951_data" version="1.3.0" audacityversion="2.1.2" sel0="5.7816028398" sel1="5.7816028398" vpos="0" h="5.5561779708" zoom="607.7412868633" rate="48000.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="topsense-10sample-lmms-asio-20170309_195951_data" version="1.3.0" audacityversion="2.1.2" sel0="6.2529177006" sel1="6.2529177006" vpos="176" h="6.1570709953" zoom="4861.9302949064" rate="48000.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
 	<tags/>
-	<wavetrack name="topsense-10sample-lmms-asio-20170309_195951" channel="2" linked="0" mute="0" solo="1" height="150" minimized="0" isSelected="1" rate="48000" gain="1.0" pan="0.0">
+	<wavetrack name="topsense-10sample-lmms-asio-20170309_195951" channel="2" linked="0" mute="0" solo="1" height="150" minimized="0" isSelected="0" rate="48000" gain="1.0" pan="0.0">
 		<waveclip offset="0.00000000">
 			<sequence maxsamples="262144" sampleformat="262159" numsamples="381952">
 				<waveblock start="0">
@@ -35,4 +35,17 @@
 			<envelope numpoints="0"/>
 		</waveclip>
 	</wavetrack>
+	<wavetrack name="topsense-10sample-lmms-asio-20170309_195951" channel="2" linked="0" mute="0" solo="1" height="150" minimized="0" isSelected="0" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="6.20514861">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="6556">
+				<waveblock start="0">
+					<simpleblockfile filename="e00003c1.au" len="6556" min="-0.891284" max="0.697758" rms="0.040457"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<labeltrack name="Label Track" numlabels="1" height="73" minimized="0" isSelected="1">
+		<label t="6.2191862421" t1="6.2329667770" title="dt=14ms"/>
+	</labeltrack>
 </project>
