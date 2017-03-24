@@ -41,10 +41,16 @@ Could test very loosely badly stuck versus well/tightly stuck.
 * Electrical contact of adhesive copper. During assembly, or drying out over time. Not tested.
 * Variation in microcontroller inport 1/0 threshold. Not tested, not planned.
 
-Cross-talking between sensors
+### Cross-talking between sensors
 
-* 3-finger hit. On pad. Adjacent pad(s). Opposite pad.
-* 1-finger hit. "="
+Possible reasons
+
+* Capacitive coupling between electrodes
+* Electromagnetic interference between connector cables
+
+Tests
+
+* 3-finger hit. On pad. Adjacent pad(s). Opposite pad. Top pad.
 * Palm touching. "="
 
 ## Ideas
