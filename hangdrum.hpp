@@ -9,13 +9,13 @@
 namespace hangdrum {
 
 enum class Note : int8_t {
-    C=0, Csharp, D, Dsharp, E, 	F, 	Fs,	G, Gsharp, A, Asharp, B,
+    C=0, Csharp, D, Dsharp, E, 	F, 	Fsharp,	G, Gsharp, A, Asharp, B,
     Lenght = 12
 };
 
 static inline
 int8_t midiNote(Note note, int8_t octave) {
-    return (octave*12)+(int8_t)note;
+    return ((octave+1)*12)+(int8_t)note;
 }
 
 enum class MidiMessageType : int8_t {
@@ -112,15 +112,15 @@ struct Config {
     float lowpass = 0.5;
     float highpass = 0.15;
     const PadConfig pads[N_PADS] = {
-        { midiNote(Note::C, octave), velocity, 1 },
-        { midiNote(Note::D, octave), velocity, 2 },
-        { midiNote(Note::E, octave), velocity, 3 },
-        { midiNote(Note::F, octave), velocity, 4 },
-        { midiNote(Note::G, octave), velocity, 5 },
-        { midiNote(Note::A, octave), velocity, 6 },
-        { midiNote(Note::B, octave), velocity, 7 },
-        { midiNote(Note::C, octave+1), velocity, 8 },
-        { midiNote(Note::C, octave+2), velocity, 9 },
+        { midiNote(Note::C, octave), velocity, 0 }, // 0 = channel 1
+        { midiNote(Note::E, octave), velocity, 1 },
+        { midiNote(Note::G, octave), velocity, 2 },
+        { midiNote(Note::B, octave), velocity, 3 },
+        { midiNote(Note::C, octave+1), velocity, 4 },
+        { midiNote(Note::A, octave), velocity, 5 },
+        { midiNote(Note::F, octave), velocity, 6 },
+        { midiNote(Note::D, octave), velocity, 7 },
+        { midiNote(Note::G, octave-1), velocity, 8 }, // 8 = channel 9
     };
 
 
