@@ -60,14 +60,14 @@ def graph(data):
   X,raw = data 
   highpass = createHighPass(0.02, 0.05)
 
-  plt.plot(X,raw)
+  plt.plot(X,raw, label='Original')
   averaged = filter(data)
   print "averaged", averaged[1].shape, len(X)
-  plt.plot(X,averaged[1])
+  plt.plot(X,averaged[1], label='Averaged')
   edge = np.convolve(averaged[1], highpass, mode="same")
   edge = np.multiply(edge, 10)
-  print "edge", edge.shape, len(X)
-  plt.plot(X,edge)
+  #print "edge", edge.shape, len(X)
+  #plt.plot(X,edge)
   plt.show()
 
 def main():
