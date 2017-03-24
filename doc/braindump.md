@@ -3,22 +3,9 @@
 
 Quick experimentation
 
-* Unhardcode filenames/options in simulator.
-* Expose key config parameters for simulator. Commandline? Threshold,filters
 * Make the trace plotting automatically update on changing values.
 Listen to file change on disk?
 * A file that declares current "experiments" and allows manipulating them
-
-Sanity
-
-* Automated test using host-simulator.
-Take input .log file, produce a flowtrace, load and check the trace.
-* Setup Travis CI, run host tests and device build there
-
-Prototype-quality
-
-* Move profiling code to separate sketch
-* Test on the real hardware
 
 Production-quality
 
@@ -33,6 +20,32 @@ Mass-production
 
 * Host program for doing final QA.
 Display test procedure to be performed (manually), record device responses, store into database 
+
+## Testing
+
+Possible sources of variation
+
+* Area being hit/touched. Fingertip versus fingerbalm. Confirmed very big effect.
+Values maybe around proportional with surface area.
+* Material between electrode and finger. Confirmed significant effect.
+Thin vinyl higher values and larger difference when pressing, compared to thicker silicone or thicker plastic.
+* Air humidity. Probable significant effect.
+Emulated by wetting pad with a towel. Much larger values when pressed, over 2x++. Sensor read timeouts happen very frequently.
+Sensitivity may need to be adjusted to compensate.
+* Finger humidity. Tested fingers wetted with water, fingers covered in chalk, normal. Indicates minor effect,
+possibly lower than testing error due to surface area variation.
+* Electromagnetic noise. Tested lying in pile of AC power and computer PSUs. Indicates no significant effect.
+* Grounding. Known theoretically to have an influence. Tested with laptop charger connected/not-connected. Indicates no significant effect.
+* Mechanical adhesion of cover tape to electrode. Not tested.
+Could test very loosely badly stuck versus well/tightly stuck.
+* Electrical contact of adhesive copper. During assembly, or drying out over time. Not tested.
+* Variation in microcontroller inport 1/0 threshold. Not tested, not planned.
+
+Cross-talking between sensors
+
+* 3-finger hit. On pad. Adjacent pad(s). Opposite pad.
+* 1-finger hit. "="
+* Palm touching. "="
 
 ## Ideas
 
