@@ -216,7 +216,10 @@ calculateStatePad(const PadState &previous, const PadInput input,
     PadState next = previous;
 
     // Apply input
-    next.raw = input.capacitance;
+    if (input.capacitance > 0) {
+        // ignore timeouts/errors. Keeping previous value in that case
+        next.raw = input.capacitance;
+    }
     next.highfilter = exponentialMovingAverage(input.capacitance, previous.highfilter, appConfig.highpass);
     next.highpassed = input.capacitance - next.highfilter;
     next.lowpassed = exponentialMovingAverage(next.highpassed, previous.lowpassed, appConfig.lowpass);

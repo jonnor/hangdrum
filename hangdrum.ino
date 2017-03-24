@@ -53,12 +53,8 @@ Input readInputs() {
   current.time = millis();
   for (int i=0; i<N_PADS; i++) {
     const int val = sensors.capacitive[i].capacitiveSensor(param);
-    if (val >= 0) {
-      current.values[i].capacitance = val;
-    } else {
-      // error/timeout
-      current.values[i].capacitance = 0;
-    }
+    current.values[i].capacitance = val;
+    // NOTE: value may be negative, which indicates timeout (or error)
   }
   return current;
 }
