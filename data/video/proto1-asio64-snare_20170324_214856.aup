@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE project PUBLIC "-//audacityproject-1.3.0//DTD//EN" "http://audacity.sourceforge.net/xml/audacityproject-1.3.0.dtd" >
+<project xmlns="http://audacity.sourceforge.net/xml/" projname="proto1-asio64-snare_20170324_214856_data" version="1.3.0" audacityversion="2.1.2" sel0="0.5930179211" sel1="0.6169534050" vpos="0" h="0.5901577061" zoom="19928.5714285714" rate="48000.0" snapto="off" selectionformat="hh:mm:ss + milliseconds" frequencyformat="Hz" bandwidthformat="octaves">
+	<tags/>
+	<wavetrack name="proto1-asio64-snare_20170324_214856" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="0" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="0.00000000">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="93184">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000cea.au" len="93184" min="-0.413362" max="0.536356" rms="0.024449"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+	<wavetrack name="proto1-asio64-snare_20170324_214856" channel="2" linked="0" mute="0" solo="0" height="150" minimized="0" isSelected="1" rate="48000" gain="1.0" pan="0.0">
+		<waveclip offset="0.57244444">
+			<sequence maxsamples="262144" sampleformat="262159" numsamples="4548">
+				<waveblock start="0">
+					<simpleblockfile filename="e0000c07.au" len="4548" min="-0.750685" max="0.89121" rms="0.040296"/>
+				</waveblock>
+			</sequence>
+			<envelope numpoints="0"/>
+		</waveclip>
+	</wavetrack>
+</project>
