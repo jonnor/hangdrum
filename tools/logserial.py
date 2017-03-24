@@ -4,10 +4,12 @@ import serial
 import sys
 
 def main():
-  port = "/dev/cu.usbmodem411"
   baud = 115200
   filename = sys.argv[1]
-  
+  port = "/dev/ttyACM0"
+  if len(sys.argv) > 2:
+    port = sys.argv[2]
+
   print "writing to", filename
   file = open(filename, "w")
 
