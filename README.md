@@ -1,16 +1,22 @@
-[![Build Status](https://travis-ci.org/jonnor/hangdrum.svg?branch=master)](https://travis-ci.org/jonnor/hangdrum)
+
 # Hangdrum
 
 Firmware for a MIDI hang-drum using capacitive touch pads.
 
-## Background
+![Electronics hang-drum being played](./doc/images/dhang-playing.jpg)
 
-This is primarily an experiement on modern workflows for developing embedded software,
-trying to find a programming model and set of tooling which facilitates:
+Blogposts
 
-* Learning about problem the device is to solve, and the environment the device operates in.
-* Understanding how the software works wrt to the problem
-* Automated verification of the device behavior against set specifications
+* [Host-based simulation for embedded systems](http://www.jonnor.com/2017/03/host-based-simulation-for-embedded-systems/)
+* [Optimizing latency of an Arduino MIDI controller](http://www.jonnor.com/2017/04/optimizing-arduino-midi-controller-latency/)
+
+## Status
+**In production**
+
+* Used as the firmware for [dhang](https://www.dhang.eu/) since March 2017
+* Tested on Arduino Lenonardo (Atmega 32u4)
+* Latency until triggered sound heard below 20ms with 8 pads, using Windows with ASIO4LL 96samples
+* Detection latency around 1ms per pads
 
 ## Architecture
 
@@ -36,8 +42,6 @@ Functional Reactive Programming and Dataflow/Flow-based-programming.
 And basically a rejection of Object Oriented Programming (as typically practiced in C++/Java/Python/..),
 particularly the idea of combining data and methods that operate on the data into a single class.
 
-## Status
-*Experimental*. Never actually been ran on the real hardware ;)
 
 ## Tools
 There is an decent set of analysis, simulation and testing tools available.
@@ -49,8 +53,4 @@ Can run in real-time, producing ALSA MIDI output. Or in faster-than-realtime, pr
 * [tools/plotflowtrace.py](./tools/plotflowtrace.py): Plot a flowtrace produced by simulator, showing decisions made
 * [tools/sendserial.py](./tools/sendserial.py`): Send an input sensor stream to device
 
-## More
 
-* Blogpost: [Host-based simulation for embedded systems](http://www.jonnor.com/2017/03/host-based-simulation-for-embedded-systems/)
-
-See [the braindump](./doc/braindump.md)
