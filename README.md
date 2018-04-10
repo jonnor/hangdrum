@@ -18,6 +18,18 @@ Blogposts
 * Latency until triggered sound heard below 20ms with 8 pads, using Windows with ASIO4LL 96samples
 * Detection latency around 1ms per pads
 
+## Installing firmware
+
+1. Download repository from Github, or use git to clone.
+2. Install the `CapacitiveSensor` Arduino library
+3. Open `hangdrum.ino` in Arduino IDE
+4. Make sure that the hardware pin configuration is correct
+5. Flash the Arduino sketch to device
+
+## Hardware setup
+
+See [CapSense documentation](https://playground.arduino.cc/Main/CapacitiveSensor?from=Main.CapSense)
+
 ## Architecture
 
 The [core](./hangdrum.hpp) of the firmware is platform and I/O independent, written in C++11.
